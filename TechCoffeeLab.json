@@ -1,0 +1,208 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        // General settings
+        "WebInstanceCount": {
+            "defaultValue": "2",
+            "type": "int"
+        },
+
+        // Virtual Network parameters
+        "VirtualNetworkName": {
+            "type": "string"
+        },
+
+        // Storage account parameters
+        "StoAccountName": {
+            "type": "string",
+        },
+        "StorageAccountType": {
+            "type": "string",
+            "allowedValues": [
+                "Standard_LRS",
+                "Standard_GRS",
+                "Standard_ZRS"
+            ]
+        },
+
+        // Virtual Machines (VMWEB) parameters
+        "VMWEBName": {
+            "type": "string"
+        },
+        "VMWEBAdminUserName": {
+            "type": "string"
+        },
+        "VMWEBAdminPassword": {
+            "type": "securestring"
+        },
+        "VMWEBWindowsOSVersion": {
+            "type": "string",
+            "defaultValue": "2012-R2-Datacenter",
+            "allowedValues": [
+                "2008-R2-SP1",
+                "2012-Datacenter",
+                "2012-R2-Datacenter",
+                "Windows-Server-Technical-Preview"
+            ]
+        },
+        "VMWEBVmSize": {
+            "type": "string",
+            "defaultValue": "Basic_A0",
+            "allowedValues": [
+                "Basic_A0",
+                "Basic_A1",
+                "Basic_A2",
+                "Basic_A3",
+                "Basic_A4",
+                "Standard_A0",
+                "Standard_A1",
+                "Standard_A2",
+                "Standard_A3",
+                "Standard_A4"
+
+            ]
+        }
+    },
+
+    "variables": {
+        "ResourcesLocation": "[ResourceGroup().location]",
+        "VirtualNetworkPrefix": "10.11.0.0/16",
+        "VirtualNetworkSubnet1Name": "Internal",
+        "VirtualNetworkSubnet1Prefix": "10.11.0.0/24",
+        "VirtualNetworkSubnet2Name": "External",
+        "VirtualNetworkSubnet2Prefix": "10.11.1.0/24",
+        "VMWEBImagePublisher": "MicrosoftWindowsServer",
+        "VMWEBImageOffer": "WindowsServer",
+        "VMWEBOSDiskName": "VMWEBOSDisk",
+        "VMWEBVnetID": "[resourceId('Microsoft.Network/virtualNetworks', parameters('VirtualNetworkName'))]",
+        "VMWEBSubnetRef": "[concat(variables('VMWEBVnetID'), '/subnets/', variables('VirtualNetworkSubnet1Name'))]",
+        "VMWEBStorageAccountContainerName": "vhds"
+    },
+    "resources": [
+        {
+            "name": "[parameters('VirtualNetworkName')]",
+            "type": "Microsoft.Network/virtualNetworks",
+            "location": "[variables('ResourcesLocation')]",
+            "apiVersion": "2015-05-01-preview",
+            "tags": {
+                "displayName": "TechCoffeevNet"
+            },
+            "properties": {
+                "addressSpace": {
+                    "addressPrefixes": [
+                        "[variables('VirtualNetworkPrefix')]"
+                    ]
+                },
+                "subnets": [
+                    {
+                        "name": "[variables('VirtualNetworkSubnet1Name')]",
+                        "properties": {
+                            "addressPrefix": "[variables('VirtualNetworkSubnet1Prefix')]"
+                        }
+                    },
+                    {
+                        "name": "[variables('VirtualNetworkSubnet2Name')]",
+                        "properties": {
+                            "addressPrefix": "[variables('VirtualNetworkSubnet2Prefix')]"
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "name": "[parameters('StoAccountName')]",
+            "type": "Microsoft.Storage/storageAccounts",
+            "location": "[variables('ResourcesLocation')]",
+            "apiVersion": "2015-05-01-preview",
+            "dependsOn": [ ],
+            "tags": {
+                "displayName": "StorageAccount"
+            },
+            "properties": {
+                "accountType": "[parameters('StorageAccountType')]"
+            }
+        },
+        {
+            "name": "[concat('vNIC_', parameters('VMWEBName'), copyindex(1))]",
+            "type": "Microsoft.Network/networkInterfaces",
+            "location": "[variables('ResourcesLocation')]",
+            "apiVersion": "2015-05-01-preview",
+            "copy": {
+                "name": "VMWEBNicLoop",
+                "count": "[parameters('WebInstanceCount')]"
+            },
+            "dependsOn": [
+                "[concat('Microsoft.Network/virtualNetworks/', parameters('VirtualNetworkName'))]"
+            ],
+            "tags": {
+                "displayName": "VMWEBNic"
+            },
+            "properties": {
+                "ipConfigurations": [
+                    {
+                        "name": "ipconfig1",
+                        "properties": {
+                            "privateIPAllocationMethod": "Dynamic",
+                            "subnet": {
+                                "id": "[variables('VMWEBSubnetRef')]"
+                            }
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "name": "[concat(parameters('VMWEBName'), copyindex(1))]",
+            "type": "Microsoft.Compute/virtualMachines",
+            "location": "[variables('ResourcesLocation')]",
+            "apiVersion": "2015-05-01-preview",
+            "copy": {
+                "name": "VMWEBLoop",
+                "count": "[parameters('WebInstanceCount')]"
+            },
+            "dependsOn": [
+                "[concat('Microsoft.Storage/storageAccounts/', parameters('StoAccountName'))]",
+                "[concat('Microsoft.Network/networkInterfaces/', 'VNIC_', parameters('VMWEBName'), copyindex(1))]"
+            ],
+            "tags": {
+                "displayName": "VMWEB"
+            },
+            "properties": {
+                "hardwareProfile": {
+                    "vmSize": "[parameters('VMWEBVmSize')]"
+                },
+                "osProfile": {
+                    "computername": "[concat(parameters('VMWEBName'), copyindex(1))]",
+                    "adminUsername": "[parameters('VMWEBAdminUsername')]",
+                    "adminPassword": "[parameters('VMWEBAdminPassword')]"
+                },
+                "storageProfile": {
+                    "imageReference": {
+                        "publisher": "[variables('VMWEBImagePublisher')]",
+                        "offer": "[variables('VMWEBImageOffer')]",
+                        "sku": "[parameters('VMWEBWindowsOSVersion')]",
+                        "version": "latest"
+                    },
+                    "osDisk": {
+                        "name": "[concat(variables('VMWEBOSDiskName'), copyindex(1))]",
+                        "vhd": {
+                            "uri": "[concat('http://', parameters('StoAccountName'), '.blob.core.windows.net/', variables('VMWEBStorageAccountContainerName'), '/', variables('VMWEBOSDiskName'), copyindex(1), '.vhd')]"
+                        },
+                        "caching": "ReadWrite",
+                        "createOption": "FromImage"
+                    }
+                },
+                "networkProfile": {
+                    "networkInterfaces": [
+                        {
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces', concat('VNIC_', parameters('VMWEBName'), copyindex(1)))]"
+                        }
+                    ]
+                }
+            }
+        }
+    ],
+    "outputs": {
+    }
+}
