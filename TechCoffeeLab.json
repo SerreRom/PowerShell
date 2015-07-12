@@ -74,7 +74,7 @@
         "VirtualNetworkSubnet2Prefix": "10.11.1.0/24",
         "VMWEBImagePublisher": "MicrosoftWindowsServer",
         "VMWEBImageOffer": "WindowsServer",
-        "VMWEBOSDiskName": "VMWEBOSDisk",
+        "VMWEBOSDiskName": "[concat(parameters('VMWEBName'), 'OSDisk')]",
         "VMWEBVnetID": "[resourceId('Microsoft.Network/virtualNetworks', parameters('VirtualNetworkName'))]",
         "VMWEBSubnetRef": "[concat(variables('VMWEBVnetID'), '/subnets/', variables('VirtualNetworkSubnet1Name'))]",
         "VMWEBStorageAccountContainerName": "vhds"
