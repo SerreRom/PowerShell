@@ -20,8 +20,20 @@
         "VMWEBAdminUserName": {
             "value": "Romain"
         },
-        "VMWEBAdminPassword": {
-            "value": "qd?INI58"
+        "SQLInstanceCount": {
+            "value": 2
+        },
+        "VMSQLName": {
+            "value": "VMSQL"
+        },
+        "VMSQLAdminUserName": {
+            "value": "Romain"
+        },
+        "WEBTierName": {
+            "value": "WebTier"
+        },
+        "SQLTierName": {
+            "value": "SQLTier"
         }
     }
 }
