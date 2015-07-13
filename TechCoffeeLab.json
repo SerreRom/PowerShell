@@ -7,6 +7,10 @@
             "defaultValue": "2",
             "type": "int"
         },
+        "SQLInstanceCount": {
+            "defaultValue": "2",
+            "type": "int"
+        },
 
         // Virtual Network parameters
         "VirtualNetworkName": {
@@ -48,6 +52,43 @@
         },
         "VMWEBVmSize": {
             "type": "string",
+            "defaultValue": "Standard_A0",
+            "allowedValues": [
+                "Basic_A0",
+                "Basic_A1",
+                "Basic_A2",
+                "Basic_A3",
+                "Basic_A4",
+                "Standard_A0",
+                "Standard_A1",
+                "Standard_A2",
+                "Standard_A3",
+                "Standard_A4"
+
+            ]
+        },
+        // Virtual Machines (VMWEB) parameters
+        "VMSQLName": {
+            "type": "string"
+        },
+        "VMSQLAdminUserName": {
+            "type": "string"
+        },
+        "VMSQLAdminPassword": {
+            "type": "securestring"
+        },
+        "VMSQLWindowsOSVersion": {
+            "type": "string",
+            "defaultValue": "2012-R2-Datacenter",
+            "allowedValues": [
+                "2008-R2-SP1",
+                "2012-Datacenter",
+                "2012-R2-Datacenter",
+                "Windows-Server-Technical-Preview"
+            ]
+        },
+        "VMSQLVmSize": {
+            "type": "string",
             "defaultValue": "Basic_A0",
             "allowedValues": [
                 "Basic_A0",
@@ -62,7 +103,16 @@
                 "Standard_A4"
 
             ]
+        },
+
+        // Availability Set Configuration
+        "WEBTierName": {
+            "type": "string"
+        },
+        "SQLTierName": {
+            "type": "string"
         }
+    
     },
 
     "variables": {
@@ -76,8 +126,14 @@
         "VMWEBImageOffer": "WindowsServer",
         "VMWEBOSDiskName": "[concat(parameters('VMWEBName'), 'OSDisk')]",
         "VMWEBVnetID": "[resourceId('Microsoft.Network/virtualNetworks', parameters('VirtualNetworkName'))]",
-        "VMWEBSubnetRef": "[concat(variables('VMWEBVnetID'), '/subnets/', variables('VirtualNetworkSubnet1Name'))]",
-        "VMWEBStorageAccountContainerName": "vhds"
+        "VMWEBSubnetRef": "[concat(variables('VMWEBVnetID'), '/subnets/', variables('VirtualNetworkSubnet2Name'))]",
+        "VMWEBStorageAccountContainerName": "vhdsweb",
+        "VMSQLImagePublisher": "MicrosoftWindowsServer",
+        "VMSQLImageOffer": "WindowsServer",
+        "VMSQLOSDiskName": "[concat(parameters('VMSQLName'), 'OSDisk')]",
+        "VMSQLVnetID": "[resourceId('Microsoft.Network/virtualNetworks', parameters('VirtualNetworkName'))]",
+        "VMSQLSubnetRef": "[concat(variables('VMWEBVnetID'), '/subnets/', variables('VirtualNetworkSubnet1Name'))]",
+        "VMSQLStorageAccountContainerName": "vhdssql"
     },
     "resources": [
         {
@@ -153,6 +209,35 @@
             }
         },
         {
+            "name": "[concat('vNIC_', parameters('VMSQLName'), copyindex(1))]",
+            "type": "Microsoft.Network/networkInterfaces",
+            "location": "[variables('ResourcesLocation')]",
+            "apiVersion": "2015-05-01-preview",
+            "copy": {
+                "name": "VMSQLLoop",
+                "count": "[parameters('SQLInstanceCount')]"
+            },
+            "dependsOn": [
+                "[concat('Microsoft.Network/virtualNetworks/', parameters('VirtualNetworkName'))]"
+            ],
+            "tags": {
+                "displayName": "VMSQLNic"
+            },
+            "properties": {
+                "ipConfigurations": [
+                    {
+                        "name": "ipconfig1",
+                        "properties": {
+                            "privateIPAllocationMethod": "Dynamic",
+                            "subnet": {
+                                "id": "[variables('VMSQLSubnetRef')]"
+                            }
+                        }
+                    }
+                ]
+            }
+        },
+        {
             "name": "[concat(parameters('VMWEBName'), copyindex(1))]",
             "type": "Microsoft.Compute/virtualMachines",
             "location": "[variables('ResourcesLocation')]",
@@ -200,6 +285,76 @@
                         }
                     ]
                 }
+            }
+        },
+        {
+            "name": "[concat(parameters('VMSQLName'), copyindex(1))]",
+            "type": "Microsoft.Compute/virtualMachines",
+            "location": "[variables('ResourcesLocation')]",
+            "apiVersion": "2015-05-01-preview",
+            "copy": {
+                "name": "VMSQLLoop",
+                "count": "[parameters('SQLInstanceCount')]"
+            },
+            "dependsOn": [
+                "[concat('Microsoft.Storage/storageAccounts/', parameters('StoAccountName'))]",
+                "[concat('Microsoft.Network/networkInterfaces/', 'VNIC_', parameters('VMSQLName'), copyindex(1))]"
+            ],
+            "tags": {
+                "displayName": "VMSQL"
+            },
+            "properties": {
+                "hardwareProfile": {
+                    "vmSize": "[parameters('VMSQLVmSize')]"
+                },
+                "osProfile": {
+                    "computername": "[concat(parameters('VMSQLName'), copyindex(1))]",
+                    "adminUsername": "[parameters('VMSQLAdminUsername')]",
+                    "adminPassword": "[parameters('VMSQLAdminPassword')]"
+                },
+                "storageProfile": {
+                    "imageReference": {
+                        "publisher": "[variables('VMSQLImagePublisher')]",
+                        "offer": "[variables('VMSQLImageOffer')]",
+                        "sku": "[parameters('VMSQLWindowsOSVersion')]",
+                        "version": "latest"
+                    },
+                    "osDisk": {
+                        "name": "[concat(variables('VMSQLOSDiskName'), copyindex(1))]",
+                        "vhd": {
+                            "uri": "[concat('http://', parameters('StoAccountName'), '.blob.core.windows.net/', variables('VMSQLStorageAccountContainerName'), '/', variables('VMSQLOSDiskName'), copyindex(1), '.vhd')]"
+                        },
+                        "caching": "ReadWrite",
+                        "createOption": "FromImage"
+                    }
+                },
+                "networkProfile": {
+                    "networkInterfaces": [
+                        {
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces', concat('VNIC_', parameters('VMSQLName'), copyindex(1)))]"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "name": "[parameters('WEBTierName')]",
+            "type": "Microsoft.Compute/availabilitySets",
+            "location": "[variables('ResourcesLocation')]",
+            "apiVersion": "2015-05-01-preview",
+            "dependsOn": [ ],
+            "tags": {
+                "displayName": "WEBTier"
+            }
+        },
+        {
+            "name": "[parameters('SQLTierName')]",
+            "type": "Microsoft.Compute/availabilitySets",
+            "location": "[variables('ResourcesLocation')]",
+            "apiVersion": "2015-05-01-preview",
+            "dependsOn": [ ],
+            "tags": {
+                "displayName": "SQLTier"
             }
         }
     ],
