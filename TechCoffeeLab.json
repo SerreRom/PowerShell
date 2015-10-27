@@ -1,363 +1,663 @@
 {
-    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
-    "contentVersion": "1.0.0.0",
-    "parameters": {
-        // General settings
-        "WebInstanceCount": {
-            "defaultValue": "2",
-            "type": "int"
-        },
-        "SQLInstanceCount": {
-            "defaultValue": "2",
-            "type": "int"
-        },
-
-        // Virtual Network parameters
-        "VirtualNetworkName": {
-            "type": "string"
-        },
-
-        // Storage account parameters
-        "StoAccountName": {
-            "type": "string",
-        },
-        "StorageAccountType": {
-            "type": "string",
-            "allowedValues": [
-                "Standard_LRS",
-                "Standard_GRS",
-                "Standard_ZRS"
-            ]
-        },
-
-        // Virtual Machines (VMWEB) parameters
-        "VMWEBName": {
-            "type": "string"
-        },
-        "VMWEBAdminUserName": {
-            "type": "string"
-        },
-        "VMWEBAdminPassword": {
-            "type": "securestring"
-        },
-        "VMWEBWindowsOSVersion": {
-            "type": "string",
-            "defaultValue": "2012-R2-Datacenter",
-            "allowedValues": [
-                "2008-R2-SP1",
-                "2012-Datacenter",
-                "2012-R2-Datacenter",
-                "Windows-Server-Technical-Preview"
-            ]
-        },
-        "VMWEBVmSize": {
-            "type": "string",
-            "defaultValue": "Standard_A0",
-            "allowedValues": [
-                "Basic_A0",
-                "Basic_A1",
-                "Basic_A2",
-                "Basic_A3",
-                "Basic_A4",
-                "Standard_A0",
-                "Standard_A1",
-                "Standard_A2",
-                "Standard_A3",
-                "Standard_A4"
-
-            ]
-        },
-        // Virtual Machines (VMWEB) parameters
-        "VMSQLName": {
-            "type": "string"
-        },
-        "VMSQLAdminUserName": {
-            "type": "string"
-        },
-        "VMSQLAdminPassword": {
-            "type": "securestring"
-        },
-        "VMSQLWindowsOSVersion": {
-            "type": "string",
-            "defaultValue": "2012-R2-Datacenter",
-            "allowedValues": [
-                "2008-R2-SP1",
-                "2012-Datacenter",
-                "2012-R2-Datacenter",
-                "Windows-Server-Technical-Preview"
-            ]
-        },
-        "VMSQLVmSize": {
-            "type": "string",
-            "defaultValue": "Basic_A0",
-            "allowedValues": [
-                "Basic_A0",
-                "Basic_A1",
-                "Basic_A2",
-                "Basic_A3",
-                "Basic_A4",
-                "Standard_A0",
-                "Standard_A1",
-                "Standard_A2",
-                "Standard_A3",
-                "Standard_A4"
-
-            ]
-        },
-
-        // Availability Set Configuration
-        "WEBTierName": {
-            "type": "string"
-        },
-        "SQLTierName": {
-            "type": "string"
-        }
-    
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    /////////////////////////////
+    // General settings
+    /////////////////////////////
+    "ExtInstanceCount": {
+      "defaultValue": 2,
+      "metadata": {
+        "description": "Number of External VM"
+      },
+      "type": "int"
+    },
+    "IntInstanceCount": {
+      "defaultValue": 2,
+      "metadata": {
+        "description": "Number of Internal VM"
+      },
+      "type": "int"
     },
 
-    "variables": {
-        "ResourcesLocation": "[ResourceGroup().location]",
-        "VirtualNetworkPrefix": "10.11.0.0/16",
-        "VirtualNetworkSubnet1Name": "Internal",
-        "VirtualNetworkSubnet1Prefix": "10.11.0.0/24",
-        "VirtualNetworkSubnet2Name": "External",
-        "VirtualNetworkSubnet2Prefix": "10.11.1.0/24",
-        "VMWEBImagePublisher": "MicrosoftWindowsServer",
-        "VMWEBImageOffer": "WindowsServer",
-        "VMWEBOSDiskName": "[concat(parameters('VMWEBName'), 'OSDisk')]",
-        "VMWEBVnetID": "[resourceId('Microsoft.Network/virtualNetworks', parameters('VirtualNetworkName'))]",
-        "VMWEBSubnetRef": "[concat(variables('VMWEBVnetID'), '/subnets/', variables('VirtualNetworkSubnet2Name'))]",
-        "VMWEBStorageAccountContainerName": "vhdsweb",
-        "VMSQLImagePublisher": "MicrosoftWindowsServer",
-        "VMSQLImageOffer": "WindowsServer",
-        "VMSQLOSDiskName": "[concat(parameters('VMSQLName'), 'OSDisk')]",
-        "VMSQLVnetID": "[resourceId('Microsoft.Network/virtualNetworks', parameters('VirtualNetworkName'))]",
-        "VMSQLSubnetRef": "[concat(variables('VMWEBVnetID'), '/subnets/', variables('VirtualNetworkSubnet1Name'))]",
-        "VMSQLStorageAccountContainerName": "vhdssql"
+    //////////////////////////////
+    //  Network Settings
+    //////////////////////////////
+
+    // 1. Virtual Network Configuration
+    "VirtualNetworkName": {
+      "defaultValue": "PublicHomeCloudNetwork",
+      "metadata": {
+        "description": "Virtual Network Name"
+      },
+      "type": "string"
     },
-    "resources": [
-        {
-            "name": "[parameters('VirtualNetworkName')]",
-            "type": "Microsoft.Network/virtualNetworks",
-            "location": "[variables('ResourcesLocation')]",
-            "apiVersion": "2015-05-01-preview",
-            "tags": {
-                "displayName": "TechCoffeevNet"
-            },
+
+    "VirtualNetworkPrefix": {
+      "DefaultValue": "10.11.0.0/16",
+      "metadata": {
+        "description": "Virtual Network Address Space"
+      },
+      "type": "string"
+    },
+
+    "InternalVirtualSubnetName": {
+      "defaultValue": "InternalSubnet",
+      "metadata": {
+        "description": "Internal subnet name"
+      },
+      "type": "string"
+    },
+
+    "ExternalVirtualSubnetName": {
+      "defaultValue": "ExternalSubnet",
+      "metadata": {
+        "description": "External subnet name"
+      },
+      "type": "string"
+    },
+
+    "GatewayVirtualSubnetName": {
+      "defaultValue": "GatewaySubnet",
+      "metadata": {
+        "description": "Gateway subnet name"
+      },
+      "type": "string"
+    },
+
+    "InternalVirtualSubnet": {
+      "defaultValue": "10.11.0.0/24",
+      "metadata": {
+        "description": "Internal subnet in the virtual network"
+      },
+      "type": "string"
+    },
+
+    "ExternalVirtualSubnet": {
+      "defaultValue": "10.11.1.0/24",
+      "metadata": {
+        "description": "External subnet in the virtual network"
+      },
+      "type": "string"
+    },
+
+    "GatewayVirtualSubnet": {
+      "defaultValue": "10.11.255.0/24",
+      "metadata": {
+        "description": "Gateway subnet in the virtual network"
+      },
+      "type": "string"
+    },
+
+    // 2. Site-To-Site Gateway Configuration
+
+    "gatewayPublicIPName": {
+      "defaultValue": "IPPublicHomeCloud",
+      "metadata": {
+        "description": "Public IP name"
+      },
+      "type": "string"
+    },
+
+    "localGatewayName": {
+      "defaultValue": "HomeCloudGW",
+      "metadata": {
+        "description": "On-Premise gateway name"
+      },
+      "type": "string"
+    },
+
+    "localGatewayIpAddress": {
+      "defaultValue": "109.110.111.112",
+      "metadata": {
+        "description": "IP Address of the on-premise VPN device"
+      },
+      "type": "string"
+    },
+
+    "AzuregatewayName": {
+      "defaultValue": "PublicHomeCloudGW",
+      "metadata": {
+        "description": "Azure Gateway name"
+      },
+      "type": "string"
+    },
+
+    "vpnType": {
+      "allowedValues": [
+        "RouteBased",
+        "PolicyBased"
+      ],
+      "defaultValue": "RouteBased",
+      "metadata": {
+        "description": "Route based or policy based"
+      },
+      "type": "string"
+    },
+
+    "LocalHomeCloudSubnet": {
+      "defaultValue": "10.10.1.0/24",
+      "metadata": {
+        "description": "On-Premise IP subnet"
+      },
+      "type": "string"
+    },
+
+    ////////////////////
+    //  Storage Settings
+    ////////////////////
+
+    "StoAccountName": {
+      "defaultValue": "publichomecloudstorage",
+      "metadata": {
+        "description": "Storage account name"
+      },
+      "type": "string"
+    },
+
+    "StorageAccountType": {
+      "allowedValues": [
+        "Standard_LRS",
+        "Standard_GRS",
+        "Standard_ZRS"
+      ],
+      "defaultValue": "Standard_LRS",
+      "metadata": {
+        "description": "Storage account type"
+      },
+      "type": "string"
+    },
+
+    /////////////////////////////
+    //  External virtual machines
+    /////////////////////////////
+
+    "VMExtName": {
+      "defaultValue": "VMWEB",
+      "metadata": {
+        "description": "External VM prefix name"
+      },
+      "type": "string"
+    },
+    "VMExtAdminUserName": {
+      "defaultValue": "Romain",
+      "metadata": {
+        "description": "administrator username"
+      },
+      "type": "string"
+    },
+    "VMExtAdminPassword": {
+      "defaultValue": "ILoveCloud1234",
+      "metadata": {
+        "description": "administrator password"
+      },
+      "type": "securestring"
+    },
+    "VMExtWindowsOSVersion": {
+      "allowedValues": [
+        "2008-R2-SP1",
+        "2012-Datacenter",
+        "2012-R2-Datacenter",
+        "Windows-Server-Technical-Preview"
+      ],
+      "defaultValue": "2012-R2-Datacenter",
+      "metadata": {
+        "description": "Deployed OS on external VM"
+      },
+      "type": "string"
+    },
+    "VMExtVmSize": {
+      "allowedValues": [
+        "Basic_A0",
+        "Basic_A1",
+        "Basic_A2",
+        "Basic_A3",
+        "Basic_A4",
+        "Standard_A0",
+        "Standard_A1",
+        "Standard_A2",
+        "Standard_A3",
+        "Standard_A4"
+      ],
+      "defaultValue": "Standard_A0",
+      "metadata": {
+        "description": "External VM size"
+      },
+      "type": "string"
+    },
+
+    "VMExtStorageAccountContainerName": {
+      "defaultValue": "vhdsweb",
+      "metadata": {
+        "description": "External VM container name"
+      },
+      "type": "string"
+    },
+
+    "VMExtImagePublisher": {
+      "defaultValue": "MicrosoftWindowsServer",
+      "metadata": {
+        "description": "Image publisher"
+      },
+      "type": "string"
+
+    },
+
+    "VMExtImageOffer": {
+      "defaultValue": "WindowsServer",
+      "metadata": {
+        "description": "Image offer"
+      },
+      "type": "string"
+    },
+    /////////////////////////////
+    //  Internal virtual machines
+    /////////////////////////////
+
+    "VMIntName": {
+      "defaultValue": "VMSQL",
+      "metadata": {
+        "description": "Internal VM prefix name"
+      },
+      "type": "string"
+    },
+    "VMIntAdminUserName": {
+      "defaultValue": "Romain",
+      "metadata": {
+        "description": "administrator username"
+      },
+      "type": "string"
+    },
+    "VMIntAdminPassword": {
+      "defaultValue": "ILoveCloud1234",
+      "metadata": {
+        "description": "administrator password"
+      },
+      "type": "securestring"
+    },
+    "VMIntWindowsOSVersion": {
+      "allowedValues": [
+        "2008-R2-SP1",
+        "2012-Datacenter",
+        "2012-R2-Datacenter",
+        "Windows-Server-Technical-Preview"
+      ],
+      "defaultValue": "2012-R2-Datacenter",
+      "metadata": {
+        "description": "Deployed OS on external VM"
+      },
+      "type": "string"
+    },
+    "VMIntVmSize": {
+      "allowedValues": [
+        "Basic_A0",
+        "Basic_A1",
+        "Basic_A2",
+        "Basic_A3",
+        "Basic_A4",
+        "Standard_A0",
+        "Standard_A1",
+        "Standard_A2",
+        "Standard_A3",
+        "Standard_A4"
+      ],
+      "defaultValue": "Standard_A0",
+      "metadata": {
+        "description": "External VM size"
+      },
+      "type": "string"
+    },
+
+    "VMIntStorageAccountContainerName": {
+      "defaultValue": "vhdssql",
+      "metadata": {
+        "description": "External VM container name"
+      },
+      "type": "string"
+    },
+
+    "VMIntImagePublisher": {
+      "defaultValue": "MicrosoftWindowsServer",
+      "metadata": {
+        "description": "Image publisher"
+      },
+      "type": "string"
+
+    },
+
+    "VMIntImageOffer": {
+      "defaultValue": "WindowsServer",
+      "metadata": {
+        "description": "Image offer"
+      },
+      "type": "string"
+    },
+    /////////////////////////////
+    //  Availability Sets
+    /////////////////////////////
+    "ExtTierName": {
+      "defaultValue": "WebTier",
+      "metadata": {
+        "description": "Availability Set for external VM"
+      },
+      "type": "string"
+    },
+    "IntTierName": {
+      "defaultValue": "SQLTier",
+      "metadata": {
+        "description": "Availability Set for internal VM"
+      },
+      "type": "string"
+    }
+  },
+  "variables": {
+    "API-Version": "2015-05-01-preview",
+    "ResourcesLocation": "[ResourceGroup().location]",
+    "VirtualNetworkId": "[resourceId('Microsoft.Network/virtualNetworks', parameters('VirtualNetworkName'))]",
+    "VMGWSubnetRef": "[concat(variables('VirtualNetworkId'), '/subnets/', parameters('GatewayVirtualSubnetName'))]",
+    "VMExtSubnetRef": "[concat(variables('VirtualNetworkId'), '/subnets/', parameters('ExternalVirtualSubnetName'))]",
+    "VMIntSubnetRef": "[concat(variables('VirtualNetworkId'), '/subnets/', parameters('InternalVirtualSubnetName'))]",
+    "VMExtOSDiskName": "[concat(parameters('VMExtName'), 'OSDisk')]",
+    "VMIntOSDiskName": "[concat(parameters('VMIntName'), 'OSDisk')]"
+
+  },
+  "resources": [
+    {
+      "apiVersion": "[variables('API-Version')]",
+      "location": "[variables('ResourcesLocation')]",
+      "name": "[parameters('VirtualNetworkName')]",
+      "properties": {
+        "addressSpace": {
+          "addressPrefixes": [
+            "[parameters('VirtualNetworkPrefix')]"
+          ]
+        },
+        "subnets": [
+          {
+            "name": "[parameters('InternalVirtualSubnetName')]",
             "properties": {
-                "addressSpace": {
-                    "addressPrefixes": [
-                        "[variables('VirtualNetworkPrefix')]"
-                    ]
-                },
-                "subnets": [
-                    {
-                        "name": "[variables('VirtualNetworkSubnet1Name')]",
-                        "properties": {
-                            "addressPrefix": "[variables('VirtualNetworkSubnet1Prefix')]"
-                        }
-                    },
-                    {
-                        "name": "[variables('VirtualNetworkSubnet2Name')]",
-                        "properties": {
-                            "addressPrefix": "[variables('VirtualNetworkSubnet2Prefix')]"
-                        }
-                    }
-                ]
+              "addressPrefix": "[parameters('InternalVirtualSubnet')]"
             }
-        },
-        {
-            "name": "[parameters('StoAccountName')]",
-            "type": "Microsoft.Storage/storageAccounts",
-            "location": "[variables('ResourcesLocation')]",
-            "apiVersion": "2015-05-01-preview",
-            "dependsOn": [ ],
-            "tags": {
-                "displayName": "StorageAccount"
-            },
+          },
+          {
+            "name": "[parameters('ExternalVirtualSubnetName')]",
             "properties": {
-                "accountType": "[parameters('StorageAccountType')]"
+              "addressPrefix": "[parameters('ExternalVirtualSubnet')]"
             }
-        },
-        {
-            "name": "[concat('vNIC_', parameters('VMWEBName'), copyindex(1))]",
-            "type": "Microsoft.Network/networkInterfaces",
-            "location": "[variables('ResourcesLocation')]",
-            "apiVersion": "2015-05-01-preview",
-            "copy": {
-                "name": "VMWEBNicLoop",
-                "count": "[parameters('WebInstanceCount')]"
-            },
-            "dependsOn": [
-                "[concat('Microsoft.Network/virtualNetworks/', parameters('VirtualNetworkName'))]"
-            ],
-            "tags": {
-                "displayName": "VMWEBNic"
-            },
+          },
+          {
+            "name": "[Parameters('GatewayVirtualSubnetName')]",
             "properties": {
-                "ipConfigurations": [
-                    {
-                        "name": "ipconfig1",
-                        "properties": {
-                            "privateIPAllocationMethod": "Dynamic",
-                            "subnet": {
-                                "id": "[variables('VMWEBSubnetRef')]"
-                            }
-                        }
-                    }
-                ]
+              "addressPrefix": "[Parameters('GatewayVirtualSubnet')]"
             }
+          }
+        ]
+      },
+      "tags": {
+        "displayName": "Virtual Network"
+      },
+      "type": "Microsoft.Network/virtualNetworks"
+    },
+    {
+      "apiVersion": "[variables('API-Version')]",
+      "location": "[variables('ResourcesLocation')]",
+      "name": "[parameters('gatewayPublicIPName')]",
+      "properties": {
+        "publicIPAllocationMethod": "Dynamic"
+      },
+      "tags": {
+        "displayName": "Public IP Address"
+      },
+      "type": "Microsoft.Network/publicIPAddresses"
+    },
+    {
+      "apiVersion": "[variables('API-version')]",
+      "location": "[variables('ResourcesLocation')]",
+      "name": "[parameters('localGatewayName')]",
+      "properties": {
+        "localNetworkAddressSpace": {
+          "addressPrefixes": [
+            "[parameters('LocalHomeCloudSubnet')]"
+          ]
         },
-        {
-            "name": "[concat('vNIC_', parameters('VMSQLName'), copyindex(1))]",
-            "type": "Microsoft.Network/networkInterfaces",
-            "location": "[variables('ResourcesLocation')]",
-            "apiVersion": "2015-05-01-preview",
-            "copy": {
-                "name": "VMSQLLoop",
-                "count": "[parameters('SQLInstanceCount')]"
-            },
-            "dependsOn": [
-                "[concat('Microsoft.Network/virtualNetworks/', parameters('VirtualNetworkName'))]"
-            ],
-            "tags": {
-                "displayName": "VMSQLNic"
-            },
+        "gatewayIpAddress": "[parameters('localGatewayIpAddress')]"
+      },
+      "tags": {
+        "displayName": "Local Gateway"
+      },
+      "type": "Microsoft.Network/localNetworkGateways"
+    },
+    {
+      "apiVersion": "[variables('API-version')]",
+      "dependsOn": [
+        "[concat('Microsoft.Network/publicIPAddresses/', parameters('gatewayPublicIPName'))]",
+        "[concat('Microsoft.Network/virtualNetworks/', parameters('virtualNetworkName'))]"
+      ],
+      "location": "[Variables('Resourceslocation')]",
+      "name": "[parameters('AzureGatewayName')]",
+      "properties": {
+        "enableBgp": false,
+        "gatewayType": "Vpn",
+        "ipConfigurations": [
+          {
             "properties": {
-                "ipConfigurations": [
-                    {
-                        "name": "ipconfig1",
-                        "properties": {
-                            "privateIPAllocationMethod": "Dynamic",
-                            "subnet": {
-                                "id": "[variables('VMSQLSubnetRef')]"
-                            }
-                        }
-                    }
-                ]
-            }
-        },
-        {
-            "name": "[concat(parameters('VMWEBName'), copyindex(1))]",
-            "type": "Microsoft.Compute/virtualMachines",
-            "location": "[variables('ResourcesLocation')]",
-            "apiVersion": "2015-05-01-preview",
-            "copy": {
-                "name": "VMWEBLoop",
-                "count": "[parameters('WebInstanceCount')]"
+              "privateIPAllocationMethod": "Dynamic",
+              "publicIPAddress": {
+                "id": "[resourceId('Microsoft.Network/publicIPAddresses',parameters('gatewayPublicIPName'))]"
+              },
+              "subnet": {
+                "id": "[variables('VMGWSubnetRef')]"
+              }
             },
-            "dependsOn": [
-                "[concat('Microsoft.Storage/storageAccounts/', parameters('StoAccountName'))]",
-                "[concat('Microsoft.Network/networkInterfaces/', 'VNIC_', parameters('VMWEBName'), copyindex(1))]"
-            ],
-            "tags": {
-                "displayName": "VMWEB"
-            },
+            "name": "vnetGatewayConfig"
+          }
+        ],
+        "vpnType": "[parameters('vpnType')]"
+      },
+      "tags": {
+        "displayName": "Azure Gateway"
+      },
+      "type": "Microsoft.Network/virtualNetworkGateways"
+    },
+
+    {
+      "apiVersion": "[variables('API-Version')]",
+      "dependsOn": [ ],
+      "location": "[variables('ResourcesLocation')]",
+      "name": "[parameters('StoAccountName')]",
+      "properties": {
+        "accountType": "[parameters('StorageAccountType')]"
+      },
+      "tags": {
+        "displayName": "StorageAccount"
+      },
+      "type": "Microsoft.Storage/storageAccounts"
+    },
+    {
+      "apiVersion": "[variables('API-Version')]",
+      "copy": {
+        "count": "[parameters('ExtInstanceCount')]",
+        "name": "VMWEBNicLoop"
+      },
+      "dependsOn": [
+        "[concat('Microsoft.Network/virtualNetworks/', parameters('VirtualNetworkName'))]"
+      ],
+      "location": "[variables('ResourcesLocation')]",
+      "name": "[concat('vNIC_', parameters('VMExtName'), copyindex(1))]",
+      "properties": {
+        "ipConfigurations": [
+          {
+            "name": "ipconfig1",
             "properties": {
-                "hardwareProfile": {
-                    "vmSize": "[parameters('VMWEBVmSize')]"
-                },
-                "osProfile": {
-                    "computername": "[concat(parameters('VMWEBName'), copyindex(1))]",
-                    "adminUsername": "[parameters('VMWEBAdminUsername')]",
-                    "adminPassword": "[parameters('VMWEBAdminPassword')]"
-                },
-                "storageProfile": {
-                    "imageReference": {
-                        "publisher": "[variables('VMWEBImagePublisher')]",
-                        "offer": "[variables('VMWEBImageOffer')]",
-                        "sku": "[parameters('VMWEBWindowsOSVersion')]",
-                        "version": "latest"
-                    },
-                    "osDisk": {
-                        "name": "[concat(variables('VMWEBOSDiskName'), copyindex(1))]",
-                        "vhd": {
-                            "uri": "[concat('http://', parameters('StoAccountName'), '.blob.core.windows.net/', variables('VMWEBStorageAccountContainerName'), '/', variables('VMWEBOSDiskName'), copyindex(1), '.vhd')]"
-                        },
-                        "caching": "ReadWrite",
-                        "createOption": "FromImage"
-                    }
-                },
-                "networkProfile": {
-                    "networkInterfaces": [
-                        {
-                            "id": "[resourceId('Microsoft.Network/networkInterfaces', concat('VNIC_', parameters('VMWEBName'), copyindex(1)))]"
-                        }
-                    ]
-                }
+              "privateIPAllocationMethod": "Dynamic",
+              "subnet": {
+                "id": "[variables('VMExtSubnetRef')]"
+              }
             }
-        },
-        {
-            "name": "[concat(parameters('VMSQLName'), copyindex(1))]",
-            "type": "Microsoft.Compute/virtualMachines",
-            "location": "[variables('ResourcesLocation')]",
-            "apiVersion": "2015-05-01-preview",
-            "copy": {
-                "name": "VMSQLLoop",
-                "count": "[parameters('SQLInstanceCount')]"
-            },
-            "dependsOn": [
-                "[concat('Microsoft.Storage/storageAccounts/', parameters('StoAccountName'))]",
-                "[concat('Microsoft.Network/networkInterfaces/', 'VNIC_', parameters('VMSQLName'), copyindex(1))]"
-            ],
-            "tags": {
-                "displayName": "VMSQL"
-            },
+          }
+        ]
+      },
+      "tags": {
+        "displayName": "External VM Network Adapter"
+      },
+      "type": "Microsoft.Network/networkInterfaces"
+    },
+    {
+      "apiVersion": "[variables('API-Version')]",
+      "copy": {
+        "count": "[parameters('IntInstanceCount')]",
+        "name": "VMSQLLoop"
+      },
+      "dependsOn": [
+        "[concat('Microsoft.Network/virtualNetworks/', parameters('VirtualNetworkName'))]"
+      ],
+      "location": "[variables('ResourcesLocation')]",
+      "name": "[concat('vNIC_', parameters('VMIntName'), copyindex(1))]",
+      "properties": {
+        "ipConfigurations": [
+          {
+            "name": "ipconfig1",
             "properties": {
-                "hardwareProfile": {
-                    "vmSize": "[parameters('VMSQLVmSize')]"
-                },
-                "osProfile": {
-                    "computername": "[concat(parameters('VMSQLName'), copyindex(1))]",
-                    "adminUsername": "[parameters('VMSQLAdminUsername')]",
-                    "adminPassword": "[parameters('VMSQLAdminPassword')]"
-                },
-                "storageProfile": {
-                    "imageReference": {
-                        "publisher": "[variables('VMSQLImagePublisher')]",
-                        "offer": "[variables('VMSQLImageOffer')]",
-                        "sku": "[parameters('VMSQLWindowsOSVersion')]",
-                        "version": "latest"
-                    },
-                    "osDisk": {
-                        "name": "[concat(variables('VMSQLOSDiskName'), copyindex(1))]",
-                        "vhd": {
-                            "uri": "[concat('http://', parameters('StoAccountName'), '.blob.core.windows.net/', variables('VMSQLStorageAccountContainerName'), '/', variables('VMSQLOSDiskName'), copyindex(1), '.vhd')]"
-                        },
-                        "caching": "ReadWrite",
-                        "createOption": "FromImage"
-                    }
-                },
-                "networkProfile": {
-                    "networkInterfaces": [
-                        {
-                            "id": "[resourceId('Microsoft.Network/networkInterfaces', concat('VNIC_', parameters('VMSQLName'), copyindex(1)))]"
-                        }
-                    ]
-                }
+              "privateIPAllocationMethod": "Dynamic",
+              "subnet": {
+                "id": "[variables('VMIntSubnetRef')]"
+              }
             }
+          }
+        ]
+      },
+      "tags": {
+        "displayName": "Internal VM Network Adapter"
+      },
+      "type": "Microsoft.Network/networkInterfaces"
+    },
+    {
+      "apiVersion": "[variables('API-Version')]",
+      "copy": {
+        "count": "[parameters('ExtInstanceCount')]",
+        "name": "VMExtLoop"
+      },
+      "dependsOn": [
+        "[concat('Microsoft.Storage/storageAccounts/', parameters('StoAccountName'))]",
+        "[concat('Microsoft.Network/networkInterfaces/', 'VNIC_', parameters('VMExtName'), copyindex(1))]"
+      ],
+      "location": "[variables('ResourcesLocation')]",
+      "name": "[concat(parameters('VMExtName'), copyindex(1))]",
+      "properties": {
+        "availabilitySet": {
+          "id": "[resourceId('Microsoft.Compute/availabilitySets', parameters('ExtTierName'))]"
         },
-        {
-            "name": "[parameters('WEBTierName')]",
-            "type": "Microsoft.Compute/availabilitySets",
-            "location": "[variables('ResourcesLocation')]",
-            "apiVersion": "2015-05-01-preview",
-            "dependsOn": [ ],
-            "tags": {
-                "displayName": "WEBTier"
-            }
+        "hardwareProfile": {
+          "vmSize": "[parameters('VMExtVmSize')]"
         },
-        {
-            "name": "[parameters('SQLTierName')]",
-            "type": "Microsoft.Compute/availabilitySets",
-            "location": "[variables('ResourcesLocation')]",
-            "apiVersion": "2015-05-01-preview",
-            "dependsOn": [ ],
-            "tags": {
-                "displayName": "SQLTier"
+        "networkProfile": {
+          "networkInterfaces": [
+            {
+              "id": "[resourceId('Microsoft.Network/networkInterfaces', concat('VNIC_', parameters('VMExtName'), copyindex(1)))]"
             }
+          ]
+        },
+        "osProfile": {
+          "adminPassword": "[parameters('VMExtAdminPassword')]",
+          "adminUsername": "[parameters('VMExtAdminUsername')]",
+          "computerName": "[concat(parameters('VMExtName'), copyindex(1))]"
+        },
+        "storageProfile": {
+          "imageReference": {
+            "offer": "[parameters('VMExtImageOffer')]",
+            "publisher": "[parameters('VMExtImagePublisher')]",
+            "sku": "[parameters('VMExtWindowsOSVersion')]",
+            "version": "latest"
+          },
+          "osDisk": {
+            "caching": "ReadWrite",
+            "createOption": "FromImage",
+            "name": "[concat(variables('VMExtOSDiskName'), copyindex(1))]",
+            "vhd": {
+              "uri": "[concat('http://', parameters('StoAccountName'), '.blob.core.windows.net/', parameters('VMExtStorageAccountContainerName'), '/', variables('VMExtOSDiskName'), copyindex(1), '.vhd')]"
+            }
+          }
         }
-    ],
+      },
+      "tags": {
+        "displayName": "External VMs"
+      },
+      "type": "Microsoft.Compute/virtualMachines"
+    },
+    {
+      "apiVersion": "[variables('API-Version')]",
+      "copy": {
+        "name": "VMExtLoop",
+        "count": "[parameters('IntInstanceCount')]"
+      },
+      "dependsOn": [
+        "[concat('Microsoft.Storage/storageAccounts/', parameters('StoAccountName'))]",
+        "[concat('Microsoft.Network/networkInterfaces/', 'VNIC_', parameters('VMIntName'), copyindex(1))]"
+      ],
+      "location": "[variables('ResourcesLocation')]",
+      "name": "[concat(parameters('VMIntName'), copyindex(1))]",
+      "properties": {
+        "availabilitySet": {
+          "id": "[resourceId('Microsoft.Compute/availabilitySets', parameters('ExtTierName'))]"
+        },
+        "hardwareProfile": {
+          "vmSize": "[parameters('VMIntVmSize')]"
+        },
+        "networkProfile": {
+          "networkInterfaces": [
+            {
+              "id": "[resourceId('Microsoft.Network/networkInterfaces', concat('VNIC_', parameters('VMIntName'), copyindex(1)))]"
+            }
+          ]
+        },
+        "osProfile": {
+          "adminPassword": "[parameters('VMIntAdminPassword')]",
+          "adminUsername": "[parameters('VMIntAdminUsername')]",
+          "computerName": "[concat(parameters('VMIntName'), copyindex(1))]"
+        },
+        "storageProfile": {
+          "imageReference": {
+            "offer": "[parameters('VMIntImageOffer')]",
+            "publisher": "[parameters('VMIntImagePublisher')]",
+            "sku": "[parameters('VMIntWindowsOSVersion')]",
+            "version": "latest"
+          },
+          "osDisk": {
+            "caching": "ReadWrite",
+            "createOption": "FromImage",
+            "name": "[concat(variables('VMIntOSDiskName'), copyindex(1))]",
+            "vhd": {
+              "uri": "[concat('http://', parameters('StoAccountName'), '.blob.core.windows.net/', parameters('VMIntStorageAccountContainerName'), '/', variables('VMIntOSDiskName'), copyindex(1), '.vhd')]"
+            }
+          }
+        }
+      },
+      "tags": {
+        "displayName": "Internal VMs"
+      },
+      "type": "Microsoft.Compute/virtualMachines"
+    },
+    {
+      "apiVersion": "[variables('API-Version')]",
+      "dependsOn": [ ],
+      "location": "[variables('ResourcesLocation')]",
+      "name": "[parameters('ExtTierName')]",
+      "tags": {
+        "displayName": "External Availability Set"
+      },
+      "type": "Microsoft.Compute/availabilitySets"
+    },
+    {
+      "apiVersion": "[variables('API-Version')]",
+      "dependsOn": [ ],
+      "location": "[variables('ResourcesLocation')]",
+      "name": "[parameters('IntTierName')]",
+      "tags": {
+        "displayName": "Internal Availability Set"
+      },
+      "type": "Microsoft.Compute/availabilitySets"
+    }
+  ],
     "outputs": {
     }
 }
