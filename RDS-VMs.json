@@ -1,0 +1,937 @@
+﻿{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "adminPassword": {
+      "type": "securestring",
+      "metadata": {
+        "description": "Password for the Virtual Machines."
+      }
+    },
+    "adminUser": {
+      "defaultValue": "Master",
+      "metadata": {
+        "description": "Administrator username"
+      },
+      "type": "string"
+    },
+    "ASDomainControllersName": {
+      "defaultValue": "AS_DomainControllers",
+      "metadata": {
+        "description": "Domain Controllers availability Set name"
+      },
+      "type": "string"
+    },
+    "ASFileServersName": {
+      "defaultValue": "AS_FileServers",
+      "metadata": {
+        "description": "File Servers availability Set name"
+      },
+      "type": "string"
+    },
+    "ASRDAccessName": {
+      "defaultValue": "AS_RDAccess",
+      "metadata": {
+        "description": "RD Access availability Set name"
+      },
+      "type": "string"
+    },
+    "ASRDAppHostName": {
+      "defaultValue": "AS_RDAppHost",
+      "metadata": {
+        "description": "RD App Host availability Set name"
+      },
+      "type": "string"
+    },
+    "ASRDBrokerName": {
+      "defaultValue": "AS_RDBroker",
+      "metadata": {
+        "description": "RD Broker availability Set name"
+      },
+      "type": "string"
+    },
+    "ImageName": {
+      "defaultValue": "W2016-OS-v1.0",
+      "metadata": {
+        "displayName": "Master image name"
+      },
+      "type": "string"
+    },
+    "NumberOfDC": {
+      "defaultValue": 2,
+      "metadata": {
+        "description": "Number of domain controllers"
+      },
+      "type": "int"
+    },
+    "NumberOfFileServers": {
+      "defaultValue": 2,
+      "metadata": {
+        "description": "Number of file servers"
+      },
+      "type": "int"
+    },
+    "NumberOfRDAccess": {
+      "defaultValue": 2,
+      "metadata": {
+        "description": "Number of RD Access servers"
+      },
+      "type": "int"
+    },
+    "NumberOfRDAppHost": {
+      "defaultValue": 2,
+      "metadata": {
+        "description": "Number of RD Application host"
+      },
+      "type": "int"
+    },
+    "NumberOfRDBroker": {
+      "defaultValue": 2,
+      "metadata": {
+        "description": "Number of RD Broker"
+      },
+      "type": "int"
+    },
+    "OSDiskMasterPath": {
+      "defaultValue": "/subscriptions/970baabd-605c-4c2b-8f93-de7420a7dbd4/resourceGroups/RDSFarm/providers/Microsoft.Compute/images/W2016-OS-v1.0",
+      "metadata": {
+        "description": "Path to the image disk"
+      },
+      "type": "string"
+    },
+    "PrefixNameDC": {
+      "defaultValue": "AZADS",
+      "metadata": {
+        "description": "Prefix name for domain controllers"
+      },
+      "type": "string"
+    },
+    "PrefixNameFileServers": {
+      "defaultValue": "AZFLS",
+      "metadata": {
+        "description": "Prefix name for file servers"
+      },
+      "type": "string"
+    },
+    "PrefixNameRDAccess": {
+      "defaultValue": "AZRDA",
+      "metadata": {
+        "description": "Prefix name for RD Access"
+      },
+      "type": "string"
+    },
+    "PrefixNameRDAppHost": {
+      "defaultValue": "AZRAH",
+      "metadata": {
+        "description": "Prefix name for RD application host"
+      },
+      "type": "string"
+    },
+    "PrefixNameRDBroker": {
+      "defaultValue": "AZRDB",
+      "metadata": {
+        "description": "Prefix name for RD application host"
+      },
+      "type": "string"
+    },
+    "PublicIPName": {
+      "defaultValue": "PIP-RDAccess",
+      "metadata": {
+        "description": "Name of the public IP"
+      },
+      "type": "string"
+    },
+    "Sto_LogsAccount": {
+      "defaultValue": "stordsfarmlogs",
+      "metadata": {
+        "description": "Storage account name for the diagnostic logs"
+      },
+      "type": "string"
+    },
+    "vNETName": {
+      "defaultValue": "vNET-RDSFarm",
+      "metadata": {
+        "description": "Virtual Network Name"
+      },
+      "type": "string"
+    },
+    "vNETSubCluName": {
+      "defaultValue": "Cluster",
+      "metadata": {
+        "description": "Cluster subnet name"
+      },
+      "type": "string"
+    },
+    "vNETSubExtName": {
+      "defaultValue": "DMZ",
+      "metadata": {
+        "description": "External subnet name"
+      },
+      "type": "string"
+    },
+    "vNETSubIntName": {
+      "defaultValue": "Internal",
+      "metadata": {
+        "description": "Internal subnet name"
+      },
+      "type": "string"
+    }
+  },
+  "variables": {
+    "computeResouresApiVersion": "2016-04-30-preview",
+    "NetworkResouresApiVersion": "2016-03-30",
+    "ResourcesLocation": "[ResourceGroup().location]",
+    "vNETID": "[resourceId('Microsoft.Network/virtualNetworks', parameters('vNETName'))]",
+    "vNETSubExtRef": "[concat(variables('vNETID'), '/subnets/', parameters('vNETSubExtName'))]",
+    "vNETSubIntRef": "[concat(variables('vNETID'), '/subnets/', parameters('vNETSubIntName'))]",
+    "vNETSubCluRef": "[concat(variables('vNETID'), '/subnets/', parameters('vNETSubCluName'))]",
+    "AccountID": "[concat('/subscriptions/', subscription().subscriptionId, '/resourceGroups/',variables('ResourcesLocation'), '/providers/','Microsoft.Storage/storageAccounts/', parameters('STO_LogsAccount'))]"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Compute/availabilitySets",
+      "sku": {
+        "name": "Aligned"
+      },
+      "name": "[parameters('ASDomainControllersName')]",
+      "apiVersion": "[variables('computeResouresApiVersion')]",
+      "location": "[variables('ResourcesLocation')]",
+      "tags": {
+        "displayName": "AS_DomainControllers"
+      },
+      "properties": {
+        "platformUpdateDomainCount": 5,
+        "platformFaultDomainCount": 2
+      }
+    },
+    {
+      "type": "Microsoft.Compute/availabilitySets",
+      "sku": {
+        "name": "Aligned"
+      },
+      "name": "[parameters('ASFileServersName')]",
+      "apiVersion": "[variables('computeResouresApiVersion')]",
+      "location": "[variables('ResourcesLocation')]",
+      "tags": {
+        "displayName": "AS_FileServers"
+      },
+      "properties": {
+        "platformUpdateDomainCount": 5,
+        "platformFaultDomainCount": 2
+      }
+    },
+    {
+      "type": "Microsoft.Compute/availabilitySets",
+      "sku": {
+        "name": "Aligned"
+      },
+      "name": "[parameters('ASRDAccessName')]",
+      "apiVersion": "[variables('computeResouresApiVersion')]",
+      "location": "[variables('ResourcesLocation')]",
+      "tags": {
+        "displayName": "AS_RDAccess"
+      },
+      "properties": {
+        "platformUpdateDomainCount": 5,
+        "platformFaultDomainCount": 2
+      }
+    },
+    {
+      "type": "Microsoft.Compute/availabilitySets",
+      "sku": {
+        "name": "Aligned"
+      },
+      "name": "[parameters('ASRDAppHostName')]",
+      "apiVersion": "[variables('computeResouresApiVersion')]",
+      "location": "[variables('ResourcesLocation')]",
+      "tags": {
+        "displayName": "AS_RDAppHost"
+      },
+      "properties": {
+        "platformUpdateDomainCount": 5,
+        "platformFaultDomainCount": 2
+      }
+    },
+    {
+      "type": "Microsoft.Compute/availabilitySets",
+      "sku": {
+        "name": "Aligned"
+      },
+      "name": "[parameters('ASRDBrokerName')]",
+      "apiVersion": "[variables('computeResouresApiVersion')]",
+      "location": "[variables('ResourcesLocation')]",
+      "tags": {
+        "displayName": "AS_RDBroker"
+      },
+      "properties": {
+        "platformUpdateDomainCount": 5,
+        "platformFaultDomainCount": 2
+      }
+    },
+
+    {
+      "type": "Microsoft.Network/publicIPAddresses",
+      "name": "[parameters('PublicIPName')]",
+      "apiVersion": "[variables('NetworkResouresApiVersion')]",
+      "location": "[variables('ResourcesLocation')]",
+      "tags": {
+        "displayName": "Public IP Address"
+      },
+      "properties": {
+        "publicIPAllocationMethod": "Static",
+        "idleTimeoutInMinutes": 4
+      },
+      "dependsOn": []
+    },
+    {
+      "type": "Microsoft.Compute/disks",
+      "name": "[concat(parameters('PrefixNameDC'), copyindex(),'-Data01')]",
+      "apiVersion": "[variables('computeResouresApiVersion')]",
+      "location": "[variables('ResourcesLocation')]",
+      "tags": {
+        "displayName": "Disks_DomainControllers"
+      },
+      "copy": {
+        "name": "DCDskLoop",
+        "count": "[parameters('numberOfDC')]"
+      },
+      "properties": {
+        "creationData": {
+          "createOption": "Empty"
+        },
+        "accountType": "Standard_LRS",
+        "diskSizeGB": 10
+      }
+    },
+    {
+      "type": "Microsoft.Compute/disks",
+      "name": "[concat(parameters('PrefixNameRDAppHost'), copyindex(),'-Data01')]",
+      "apiVersion": "[variables('computeResouresApiVersion')]",
+      "location": "[variables('ResourcesLocation')]",
+      "tags": {
+        "displayName": "Disks_RDAppHost"
+      },
+      "copy": {
+        "name": "RHDskLoop",
+        "count": "[parameters('NumberOfRDAppHost')]"
+      },
+      "properties": {
+        "creationData": {
+          "createOption": "Empty"
+        },
+        "accountType": "Standard_LRS",
+        "diskSizeGB": 100
+      }
+    },
+    {
+      "type": "Microsoft.Compute/disks",
+      "name": "[concat(parameters('PrefixNameFileServers'), copyindex(),'-Data01')]",
+      "apiVersion": "[variables('computeResouresApiVersion')]",
+      "location": "[variables('ResourcesLocation')]",
+      "tags": {
+        "displayName": "Disks_FS01"
+      },
+      "copy": {
+        "name": "FSDskLoop",
+        "count": "[parameters('NumberOfFileServers')]"
+      },
+      "properties": {
+        "creationData": {
+          "createOption": "Empty"
+        },
+        "accountType": "Standard_LRS",
+        "diskSizeGB": 100
+      }
+    },
+    {
+      "type": "Microsoft.Compute/disks",
+      "name": "[concat(parameters('PrefixNameFileServers'), copyindex(),'-Data02')]",
+      "apiVersion": "[variables('computeResouresApiVersion')]",
+      "location": "[variables('ResourcesLocation')]",
+      "tags": {
+        "displayName": "Disks_FS02"
+      },
+      "copy": {
+        "name": "FSDskLoop",
+        "count": "[parameters('NumberOfFileServers')]"
+      },
+      "properties": {
+        "creationData": {
+          "createOption": "Empty"
+        },
+        "accountType": "Standard_LRS",
+        "diskSizeGB": 100
+      }
+    },
+    {
+      "type": "Microsoft.Compute/disks",
+      "name": "[concat(parameters('PrefixNameFileServers'), copyindex(),'-Data03')]",
+      "apiVersion": "[variables('computeResouresApiVersion')]",
+      "location": "[variables('ResourcesLocation')]",
+      "tags": {
+        "displayName": "Disks_FS03"
+      },
+      "copy": {
+        "name": "FSDskLoop",
+        "count": "[parameters('NumberOfFileServers')]"
+      },
+      "properties": {
+        "creationData": {
+          "createOption": "Empty"
+        },
+        "accountType": "Standard_LRS",
+        "diskSizeGB": 100
+      }
+    },
+    {
+      "type": "Microsoft.Compute/disks",
+      "name": "[concat(parameters('PrefixNameFileServers'), copyindex(),'-Data04')]",
+      "apiVersion": "[variables('computeResouresApiVersion')]",
+      "location": "[variables('ResourcesLocation')]",
+      "tags": {
+        "displayName": "Disks_FS04"
+      },
+      "copy": {
+        "name": "FSDskLoop",
+        "count": "[parameters('NumberOfFileServers')]"
+      },
+      "properties": {
+        "creationData": {
+          "createOption": "Empty"
+        },
+        "accountType": "Standard_LRS",
+        "diskSizeGB": 100
+      }
+    },
+    {
+      "type": "Microsoft.Network/networkInterfaces",
+      "name": "[concat(parameters('PrefixNameDC'), copyindex())]",
+      "apiVersion": "[variables('NetworkResouresApiVersion')]",
+      "location": "[variables('ResourcesLocation')]",
+      "tags": {
+        "displayName": "vNIC_DomainControllers"
+      },
+      "copy": {
+        "name": "DCnicLoop",
+        "count": "[parameters('numberOfDC')]"
+      },
+      "properties": {
+        "ipConfigurations": [
+          {
+            "name": "ipconfig1",
+            "properties": {
+              "privateIPAllocationMethod": "Dynamic",
+              "subnet": {
+                "id": "[Variables('vNetSubIntRef')]"
+              }
+            }
+          }
+        ],
+        "dnsSettings": {
+          "dnsServers": []
+        },
+        "enableIPForwarding": false
+      }
+    },
+    {
+      "type": "Microsoft.Network/networkInterfaces",
+      "name": "[concat(parameters('PrefixNameRDAccess'), copyindex())]",
+      "apiVersion": "[variables('NetworkResouresApiVersion')]",
+      "location": "[variables('ResourcesLocation')]",
+      "tags": {
+        "displayName": "vNIC_RDAccess"
+      },
+      "copy": {
+        "name": "RDAnicLoop",
+        "count": "[parameters('NumberOfRDAccess')]"
+      },
+      "properties": {
+        "ipConfigurations": [
+          {
+            "name": "ipconfig1",
+            "properties": {
+              "privateIPAllocationMethod": "Dynamic",
+              "subnet": {
+                "id": "[Variables('vNetSubExtRef')]"
+              }
+            }
+          }
+        ],
+        "dnsSettings": {
+          "dnsServers": []
+        },
+        "enableIPForwarding": false
+      }
+    },
+    {
+      "type": "Microsoft.Network/networkInterfaces",
+      "name": "[concat(parameters('PrefixNameRDBroker'), copyindex())]",
+      "apiVersion": "[variables('NetworkResouresApiVersion')]",
+      "location": "[variables('ResourcesLocation')]",
+      "tags": {
+        "displayName": "vNIC_RDBroker"
+      },
+      "copy": {
+        "name": "RDBnicLoop",
+        "count": "[parameters('numberOfRDBroker')]"
+      },
+      "properties": {
+        "ipConfigurations": [
+          {
+            "name": "ipconfig1",
+            "properties": {
+              "privateIPAllocationMethod": "Dynamic",
+              "subnet": {
+                "id": "[Variables('vNetSubIntRef')]"
+              }
+            }
+          }
+        ],
+        "dnsSettings": {
+          "dnsServers": []
+        },
+        "enableIPForwarding": false
+      }
+    },
+    {
+      "type": "Microsoft.Network/networkInterfaces",
+      "name": "[concat(parameters('PrefixNameRDAppHost'), copyindex())]",
+      "apiVersion": "[variables('NetworkResouresApiVersion')]",
+      "location": "[variables('ResourcesLocation')]",
+      "tags": {
+        "displayName": "vNIC_RDAppHost"
+      },
+      "copy": {
+        "name": "RDHnicLoop",
+        "count": "[parameters('NumberOfRDAppHost')]"
+      },
+      "properties": {
+        "ipConfigurations": [
+          {
+            "name": "ipconfig1",
+            "properties": {
+              "privateIPAllocationMethod": "Dynamic",
+              "subnet": {
+                "id": "[Variables('vNetSubIntRef')]"
+              }
+            }
+          }
+        ],
+        "dnsSettings": {
+          "dnsServers": []
+        },
+        "enableIPForwarding": false
+      }
+    },
+    {
+      "type": "Microsoft.Network/networkInterfaces",
+      "name": "[concat(parameters('PrefixNameFileServers'), copyindex())]",
+      "apiVersion": "[variables('NetworkResouresApiVersion')]",
+      "location": "[variables('ResourcesLocation')]",
+      "tags": {
+        "displayName": "vNIC_FileServers"
+      },
+      "copy": {
+        "name": "FSnicLoop",
+        "count": "[parameters('NumberOfFileServers')]"
+      },
+      "properties": {
+        "ipConfigurations": [
+          {
+            "name": "ipconfig1",
+            "properties": {
+              "privateIPAllocationMethod": "Dynamic",
+              "subnet": {
+                "id": "[Variables('vNetSubIntRef')]"
+              }
+            }
+          }
+        ],
+        "dnsSettings": {
+          "dnsServers": []
+        },
+        "enableIPForwarding": false
+      }
+    },
+    {
+      "type": "Microsoft.Network/networkInterfaces",
+      "name": "[concat(parameters('PrefixNameFileServers'), copyindex(),'-cluster')]",
+      "apiVersion": "[variables('NetworkResouresApiVersion')]",
+      "location": "[variables('ResourcesLocation')]",
+      "tags": {
+        "displayName": "vNIC_FileServers-Cluster"
+      },
+      "copy": {
+        "count": "[parameters('NumberOfFileServers')]",
+        "name": "FSCnicLoop"
+      },
+      "properties": {
+        "ipConfigurations": [
+          {
+            "name": "ipconfig1",
+            "properties": {
+              "privateIPAllocationMethod": "Dynamic",
+              "subnet": {
+                "id": "[Variables('vNetSubCluRef')]"
+              }
+            }
+          }
+        ],
+        "dnsSettings": {
+          "dnsServers": []
+        },
+        "enableIPForwarding": false
+      }
+    },
+    {
+      "name": "[concat(parameters('PrefixNameDC'), copyindex())]",
+      "type": "Microsoft.Compute/virtualMachines",
+      "apiVersion": "[variables('computeResouresApiVersion')]",
+      "location": "[variables('ResourcesLocation')]",
+      "tags": {
+        "displayName": "VM_DomainControllers"
+      },
+      "copy": {
+        "name": "DCVMLoop",
+        "count": "[parameters('NumberOfDC')]"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Compute/availabilitySets', parameters('ASDomainControllersName'))]",
+        "[resourceId('Microsoft.Network/networkInterfaces', concat(parameters('PrefixNameDC'), copyindex()))]"
+      ],
+      "properties": {
+        "osProfile": {
+          "computerName": "[concat(parameters('PrefixNameDC'), copyindex())]",
+          "adminUsername": "[parameters('adminUser')]",
+          "adminPassword": "[parameters('adminPassword')]",
+          "windowsConfiguration": {
+            "provisionVmAgent": "true"
+          }
+        },
+        "hardwareProfile": {
+          "vmSize": "Standard_DS1_v2"
+        },
+        "storageProfile": {
+          "imageReference": {
+            "id": "[parameters('OSDiskMasterPath')]"
+          },
+          "osDisk": {
+            "name": "[concat(parameters('PrefixNameDC'), copyindex(),'-OS')]",
+            "createOption": "FromImage",
+            "managedDisk": {
+              "storageAccountType": "Standard_LRS"
+            }
+          },
+          "dataDisks": [
+            {
+              "lun": 2,
+              "name": "[concat(parameters('PrefixNameDC'), copyindex(),'-Data01')]",
+              "createOption": "Attach",
+              "managedDisk": {
+                "id": "[resourceId('Microsoft.Compute/disks', concat(parameters('PrefixNameDC'), copyindex(),'-Data01'))]"
+              }
+            }
+          ]
+        },
+        "networkProfile": {
+          "networkInterfaces": [
+            {
+              "id": "[resourceId('Microsoft.Network/networkInterfaces', concat(parameters('PrefixNameDC'), copyindex()))]"
+            }
+          ]
+        },
+        "diagnosticsProfile": {
+          "bootDiagnostics": {
+            "enabled": true,
+            "storageUri": "[reference(resourceId('rdsfarm', 'Microsoft.Storage/storageAccounts', parameters('Sto_LogsAccount')), '2015-06-15').primaryEndpoints['blob']]"
+          }
+        },
+        "availabilitySet": {
+          "id": "[resourceId('Microsoft.Compute/availabilitySets', parameters('ASDomainControllersName'))]"
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Compute/virtualMachines",
+      "name": "[concat(parameters('PrefixNameFileServers'), copyindex())]",
+      "apiVersion": "[variables('computeResouresApiVersion')]",
+      "location": "[variables('ResourcesLocation')]",
+      "tags": {
+        "displayName": "VM_FileServers"
+      },
+      "copy": {
+        "name": "FSVMLoop",
+        "count": "[parameters('NumberOfFileServers')]"
+      },
+      "properties": {
+        "availabilitySet": {
+          "id": "[resourceId('Microsoft.Compute/availabilitySets', parameters('ASFileServersName'))]"
+        },
+        "hardwareProfile": {
+          "vmSize": "Standard_DS2_v2"
+        },
+        "storageProfile": {
+          "imageReference": {
+            "id": "[parameters('OSDiskMasterPath')]"
+          },
+          "osDisk": {
+            "name": "[concat(parameters('PrefixNameFileServers'), copyindex(),'-OS')]",
+            "createOption": "FromImage",
+            "managedDisk": {
+              "storageAccountType": "Standard_LRS"
+            }
+          },
+          "dataDisks": [
+            {
+              "lun": 2,
+              "name": "[concat(parameters('PrefixNameFileServers'), copyindex(),'-Data01')]",
+              "createOption": "Attach",
+              "managedDisk": {
+                "id": "[resourceId('Microsoft.Compute/disks', concat(parameters('PrefixNameFileServers'), copyindex(),'-Data01'))]"
+              }
+            },
+            {
+              "lun": 3,
+              "name": "[concat(parameters('PrefixNameFileServers'), copyindex(),'-Data02')]",
+              "createOption": "Attach",
+              "managedDisk": {
+                "id": "[resourceId('Microsoft.Compute/disks', concat(parameters('PrefixNameFileServers'), copyindex(),'-Data02'))]"
+              }
+            },
+            {
+              "lun": 4,
+              "name": "[concat(parameters('PrefixNameFileServers'), copyindex(),'-Data03')]",
+              "createOption": "Attach",
+              "managedDisk": {
+                "id": "[resourceId('Microsoft.Compute/disks', concat(parameters('PrefixNameFileServers'), copyindex(),'-Data03'))]"
+              }
+            },
+            {
+              "lun": 5,
+              "name": "[concat(parameters('PrefixNameFileServers'), copyindex(),'-Data04')]",
+              "createOption": "Attach",
+              "managedDisk": {
+                "id": "[resourceId('Microsoft.Compute/disks', concat(parameters('PrefixNameFileServers'), copyindex(),'-Data04'))]"
+              }
+            }
+          ]
+        },
+        "osProfile": {
+          "computerName": "[concat(parameters('PrefixNameDC'), copyindex())]",
+          "adminUsername": "[parameters('adminUser')]",
+          "adminPassword": "[parameters('adminPassword')]",
+          "windowsConfiguration": {
+            "provisionVmAgent": "true"
+          }
+        },
+        "networkProfile": {
+          "networkInterfaces": [
+            {
+              "id": "[resourceId('Microsoft.Network/networkInterfaces', concat(parameters('PrefixNameFileServers'), copyindex()))]",
+              "properties": { "primary": true }
+            },
+            {
+              "id": "[resourceId('Microsoft.Network/networkInterfaces', concat(parameters('PrefixNameFileServers'), copyindex(),'-cluster'))]",
+              "properties": { "primary": false }
+            }
+          ]
+        },
+        "diagnosticsProfile": {
+          "bootDiagnostics": {
+            "enabled": true,
+            "storageUri": "[concat('https', '://', parameters('STO_LogsAccount'), '.blob.core.windows.net', '/')]"
+          }
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Compute/availabilitySets', parameters('ASFileServersName'))]",
+        "[resourceId('Microsoft.Network/networkInterfaces', concat(parameters('PrefixNameFileServers'), copyindex()))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Compute/virtualMachines",
+      "name": "[concat(parameters('PrefixNameRDAccess'), copyindex())]",
+      "apiVersion": "[variables('computeResouresApiVersion')]",
+      "location": "[variables('ResourcesLocation')]",
+      "tags": {
+        "displayName": "VM_RDAccess"
+      },
+      "copy": {
+        "name": "RDAVMLoop",
+        "count": "[parameters('NumberOfRDAccess')]"
+      },
+      "properties": {
+        "availabilitySet": {
+          "id": "[resourceId('Microsoft.Compute/availabilitySets', parameters('ASRDAccessName'))]"
+        },
+        "hardwareProfile": {
+          "vmSize": "Standard_DS1_v2"
+        },
+        "storageProfile": {
+          "imageReference": {
+            "id": "[parameters('OSDiskMasterPath')]"
+          },
+          "osDisk": {
+            "name": "[concat(parameters('PrefixNameRDAccess'), copyindex(),'-OS')]",
+            "createOption": "FromImage",
+            "managedDisk": {
+              "storageAccountType": "Standard_LRS"
+            }
+          },
+          "dataDisks": []
+        },
+        "osProfile": {
+          "computerName": "[concat(parameters('PrefixNameDC'), copyindex())]",
+          "adminUsername": "[parameters('adminUser')]",
+          "adminPassword": "[parameters('adminPassword')]",
+          "windowsConfiguration": {
+            "provisionVmAgent": "true"
+          }
+        },
+        "networkProfile": {
+          "networkInterfaces": [
+            {
+              "id": "[resourceId('Microsoft.Network/networkInterfaces', concat(parameters('PrefixNameRDAccess'), copyindex()))]"
+            }
+          ]
+        },
+        "diagnosticsProfile": {
+          "bootDiagnostics": {
+            "enabled": true,
+            "storageUri": "[concat('https', '://', parameters('STO_LogsAccount'), '.blob.core.windows.net', '/')]"
+          }
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Compute/availabilitySets', parameters('ASRDAccessName'))]",
+        "[resourceId('Microsoft.Network/networkInterfaces', concat(parameters('PrefixNameRDAccess'), copyindex()))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Compute/virtualMachines",
+      "name": "[concat(parameters('PrefixNameRDAppHost'), copyindex())]",
+      "apiVersion": "[variables('computeResouresApiVersion')]",
+      "location": "[variables('ResourcesLocation')]",
+      "tags": {
+        "displayName": "VM_RDAppHost"
+      },
+      "copy": {
+        "name": "RDHVMLoop",
+        "count": "[parameters('NumberOfRDAppHost')]"
+      },
+      "properties": {
+        "availabilitySet": {
+          "id": "[resourceId('Microsoft.Compute/availabilitySets', parameters('ASRDAppHostName'))]"
+        },
+        "hardwareProfile": {
+          "vmSize": "Standard_DS1_v2"
+        },
+        "storageProfile": {
+          "imageReference": {
+            "id": "[parameters('OSDiskMasterPath')]"
+          },
+          "osDisk": {
+            "name": "[concat(parameters('PrefixNameRDAppHost'), copyindex(),'-OS')]",
+            "createOption": "FromImage",
+            "managedDisk": {
+              "storageAccountType": "Standard_LRS"
+            }
+          },
+          "dataDisks": [
+            {
+              "lun": 2,
+              "name": "[concat(parameters('PrefixNameRDAppHost'), copyindex(),'-Data01')]",
+              "createOption": "Attach",
+              "managedDisk": {
+                "id": "[resourceId('Microsoft.Compute/disks', concat(parameters('PrefixNameRDAppHost'), copyindex(),'-Data01'))]"
+              }
+            }
+          ]
+        },
+        "osProfile": {
+          "computerName": "[concat(parameters('PrefixNameDC'), copyindex())]",
+          "adminUsername": "[parameters('adminUser')]",
+          "adminPassword": "[parameters('adminPassword')]",
+          "windowsConfiguration": {
+            "provisionVmAgent": "true"
+          }
+        },
+        "networkProfile": {
+          "networkInterfaces": [
+            {
+              "id": "[resourceId('Microsoft.Network/networkInterfaces', concat(parameters('PrefixNameRDAppHost'), copyindex()))]"
+            }
+          ]
+        },
+        "diagnosticsProfile": {
+          "bootDiagnostics": {
+            "enabled": true,
+            "storageUri": "[concat('https', '://', parameters('STO_LogsAccount'), '.blob.core.windows.net', '/')]"
+          }
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Compute/availabilitySets', parameters('ASRDAppHostName'))]",
+        "[resourceId('Microsoft.Network/networkInterfaces', concat(parameters('PrefixNameRDAppHost'), copyindex()))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Compute/virtualMachines",
+      "name": "[concat(parameters('PrefixNameRDBroker'), copyindex())]",
+      "apiVersion": "[variables('computeResouresApiVersion')]",
+      "location": "[variables('ResourcesLocation')]",
+      "tags": {
+        "displayName": "VM_RDBroker"
+      },
+      "copy": {
+        "name": "RDHVMLoop",
+        "count": "[parameters('NumberOfRDBroker')]"
+      },
+      "properties": {
+        "availabilitySet": {
+          "id": "[resourceId('Microsoft.Compute/availabilitySets', parameters('ASRDBrokerName'))]"
+        },
+        "hardwareProfile": {
+          "vmSize": "Standard_DS1_v2"
+        },
+        "storageProfile": {
+          "imageReference": {
+            "id": "[parameters('OSDiskMasterPath')]"
+          },
+          "osDisk": {
+            "name": "[concat(parameters('PrefixNameRDBroker'), copyindex(),'-OS')]",
+            "createOption": "FromImage",
+            "managedDisk": {
+              "storageAccountType": "Standard_LRS"
+            }
+          }
+        },
+        "osProfile": {
+          "computerName": "[concat(parameters('PrefixNameRDBroker'), copyindex())]",
+          "adminUsername": "[parameters('adminUser')]",
+          "adminPassword": "[parameters('adminPassword')]",
+          "windowsConfiguration": {
+            "provisionVmAgent": "true"
+          }
+        },
+        "networkProfile": {
+          "networkInterfaces": [
+            {
+              "id": "[resourceId('Microsoft.Network/networkInterfaces', concat(parameters('PrefixNameRDBroker'), copyindex()))]"
+            }
+          ]
+        },
+        "diagnosticsProfile": {
+          "bootDiagnostics": {
+            "enabled": true,
+            "storageUri": "[concat('https', '://', parameters('STO_LogsAccount'), '.blob.core.windows.net', '/')]"
+          }
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Compute/availabilitySets', parameters('ASRDBrokerName'))]",
+        "[resourceId('Microsoft.Network/networkInterfaces', concat(parameters('PrefixNameRDBroker'), copyindex()))]"
+      ]
+    }
+  ]
+}
