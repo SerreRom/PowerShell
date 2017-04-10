@@ -1,0 +1,292 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+
+    "vNETName": {
+      "defaultValue": "vNET-RDSFarm",
+      "metadata": {
+        "description": "Virtual Network Name"
+      },
+      "type": "string"
+    },
+
+    "vNETPrefix": {
+      "defaultValue": "10.11.0.0/16",
+      "metadata": {
+        "description": "Virtual Network Address Space"
+      },
+      "type": "string"
+    },
+
+    "vNETSubIntName": {
+      "defaultValue": "Internal",
+      "metadata": {
+        "description": "Internal subnet name"
+      },
+      "type": "string"
+    },
+
+    "vNETSubExtName": {
+      "defaultValue": "DMZ",
+      "metadata": {
+        "description": "External subnet name"
+      },
+      "type": "string"
+    },
+
+    "vNETSubCluName": {
+      "defaultValue": "Cluster",
+      "metadata": {
+        "description": "Cluster subnet name"
+      },
+      "type": "string"
+    },
+
+    "vNETSubGtwName": {
+      "defaultValue": "GatewaySubnet",
+      "metadata": {
+        "description": "Gateway subnet name"
+      },
+      "type": "string"
+    },
+
+    "vNETSubIntPrefix": {
+      "defaultValue": "10.11.0.0/24",
+      "metadata": {
+        "description": "Internal IP subnet"
+      },
+      "type": "string"
+    },
+
+    "vNETSubExtPrefix": {
+      "defaultValue": "10.11.1.0/24",
+      "metadata": {
+        "description": "External IP subnet"
+      },
+      "type": "string"
+    },
+
+    "vNETSubCluPrefix": {
+      "defaultValue": "10.11.100.0/24",
+      "metadata": {
+        "description": "Cluster IP subnet"
+      },
+      "type": "string"
+    },
+
+    "vNETSubGtwPrefix": {
+      "defaultValue": "10.11.255.0/24",
+      "metadata": {
+        "description": "Gateway IP subnet"
+      },
+      "type": "string"
+    },
+
+    "S2SPIPName": {
+      "defaultValue": "S2S-Azure-PIP",
+      "metadata": {
+        "description": "Public IP name"
+      },
+      "type": "string"
+    },
+
+    "S2SGtwOnPremName": {
+      "defaultValue": "S2S-OnPrem-GW",
+      "metadata": {
+        "description": "On-Premise gateway name"
+      },
+      "type": "string"
+    },
+
+    "S2SGtwOnPremPIP": {
+      "defaultValue": "90.86.219.242",
+      "metadata": {
+        "description": "IP Address of the on-premise VPN device"
+      },
+      "type": "string"
+    },
+
+    "S2SGtwAzureName": {
+      "defaultValue": "S2S-Azure-GW",
+      "metadata": {
+        "description": "Azure Gateway name"
+      },
+      "type": "string"
+    },
+
+    "S2SGtwVPNType": {
+      "allowedValues": [
+        "RouteBased",
+        "PolicyBased"
+      ],
+      "defaultValue": "RouteBased",
+      "metadata": {
+        "description": "Route based or policy based"
+      },
+      "type": "string"
+    },
+
+    "S2SLocalIPSubnet": {
+      "defaultValue": "10.10.0.0/24",
+      "metadata": {
+        "description": "On-Premise IP subnet"
+      },
+      "type": "string"
+    },
+    "StoAcctLogName": {
+      "defaultValue": "stordsfarmlogs",
+      "metadata": {
+        "description": "Logs Storage account name"
+      },
+      "type": "string"
+    },
+
+    "StoAcctLogType": {
+      "allowedValues": [
+        "Standard_LRS",
+        "Standard_GRS",
+        "Standard_ZRS"
+      ],
+      "defaultValue": "Standard_LRS",
+      "metadata": {
+        "description": "Log Storage account type"
+      },
+      "type": "string"
+    }
+
+  },
+  "variables": {
+    "API-Version": "2016-03-30",
+    "ResourcesLocation": "[ResourceGroup().location]",
+    "vNETID": "[resourceId('Microsoft.Network/virtualNetworks', parameters('vNETName'))]",
+    "vNETSubGtwRef": "[concat(variables('vNETID'), '/subnets/', parameters('vNETSubGtwName'))]",
+    "vNETSubExtRef": "[concat(variables('vNETID'), '/subnets/', parameters('vNETSubExtName'))]",
+    "vNETSubIntRef": "[concat(variables('vNETID'), '/subnets/', parameters('vNETSubIntName'))]",
+    "vNETSubCluRef": "[concat(variables('vNETID'), '/subnets/', parameters('vNETSubCluName'))]"
+
+  },
+  "resources": [
+    {
+      "apiVersion": "[variables('API-Version')]",
+      "location": "[variables('ResourcesLocation')]",
+      "name": "[parameters('vNETName')]",
+      "properties": {
+        "addressSpace": {
+          "addressPrefixes": [
+            "[parameters('vNETPrefix')]"
+          ]
+        },
+        "subnets": [
+          {
+            "name": "[parameters('vNETSubIntName')]",
+            "properties": {
+              "addressPrefix": "[parameters('vNETSubIntPrefix')]"
+            }
+          },
+          {
+            "name": "[parameters('vNETSubExtName')]",
+            "properties": {
+              "addressPrefix": "[parameters('vNETSubExtPrefix')]"
+            }
+          },
+          {
+            "name": "[parameters('vNETSubCluName')]",
+            "properties": {
+              "addressPrefix": "[parameters('vNETSubCluPrefix')]"
+            }
+          },
+          {
+            "name": "[Parameters('vNETSubGtwName')]",
+            "properties": {
+              "addressPrefix": "[Parameters('vNETSubGtwPrefix')]"
+            }
+          }
+        ]
+      },
+      "tags": {
+        "displayName": "Virtual Network"
+      },
+      "type": "Microsoft.Network/virtualNetworks"
+    },
+    {
+      "apiVersion": "[variables('API-Version')]",
+      "location": "[variables('ResourcesLocation')]",
+      "name": "[parameters('S2SPIPName')]",
+      "properties": {
+        "publicIPAllocationMethod": "Dynamic"
+      },
+      "tags": {
+        "displayName": "Public IP Address"
+      },
+      "type": "Microsoft.Network/publicIPAddresses"
+    },
+    {
+      "apiVersion": "[variables('API-version')]",
+      "location": "[variables('ResourcesLocation')]",
+      "name": "[parameters('S2SGtwOnPremName')]",
+      "properties": {
+        "localNetworkAddressSpace": {
+          "addressPrefixes": [
+            "[parameters('S2SLocalIPSubnet')]"
+          ]
+        },
+        "gatewayIpAddress": "[parameters('S2SGtwOnPremPIP')]"
+      },
+      "tags": {
+        "displayName": "Local Gateway"
+      },
+      "type": "Microsoft.Network/localNetworkGateways"
+    },
+    {
+      "apiVersion": "[variables('API-version')]",
+      "dependsOn": [
+        "[concat('Microsoft.Network/publicIPAddresses/', parameters('S2SPIPName'))]",
+        "[concat('Microsoft.Network/virtualNetworks/', parameters('vNETName'))]"
+      ],
+      "location": "[Variables('Resourceslocation')]",
+      "name": "[parameters('S2SGtwAzureName')]",
+      "properties": {
+        "enableBgp": false,
+        "gatewayType": "Vpn",
+        "ipConfigurations": [
+          {
+            "properties": {
+              "privateIPAllocationMethod": "Dynamic",
+              "publicIPAddress": {
+                "id": "[resourceId('Microsoft.Network/publicIPAddresses',parameters('S2SPIPName'))]"
+              },
+              "subnet": {
+                "id": "[variables('vNETSubGtwRef')]"
+              }
+            },
+            "name": "vnetGatewayConfig"
+          }
+        ],
+        "vpnType": "[parameters('S2SGtwVPNType')]"
+      },
+      "tags": {
+        "displayName": "Azure Gateway"
+      },
+      "type": "Microsoft.Network/virtualNetworkGateways"
+    },
+
+    {
+      "name": "[parameters('StoAcctLogName')]",
+      "type": "Microsoft.Storage/storageAccounts",
+      "apiVersion": "2016-05-01",
+      "tags": {
+        "displayName": "Log Storage Account"
+      },
+      "sku": {
+        "name": "[parameters('StoAcctLogType')]"
+      },
+      "kind": "Storage",
+      "location": "[variables('ResourcesLocation')]"
+    }
+
+
+  ],
+  "outputs": {}
+}
+
