@@ -1,2 +1,2 @@
 # TechCoffee
-JSON for AzureStack
+Welcome to the tch-coffee repository
