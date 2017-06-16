@@ -1,0 +1,1366 @@
+{
+  "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "adminPassword": {
+      "type": "securestring",
+      "minLength": 12,
+      "metadata": {
+        "description": "VM Administrator password"
+      }
+    },
+    "adminUsername": {
+      "defaultValue": "master",
+      "minLength": 5,
+      "type": "string",
+      "metadata": {
+        "description": "VM administrator name"
+      }
+    },
+    "availabilitySetDomainControllersName": {
+      "type": "string",
+      "defaultValue": "AS-DomainControllers",
+      "metadata": {
+        "description": "availability set name for Domain Controller"
+      }
+    },
+    "availabilitySetVeeamCloudConnectName": {
+      "type": "string",
+      "defaultValue": "AS-VeeamCloudConnect",
+      "metadata": {
+        "description": "availability set name for Veeam Cloud Connect"
+      }
+    },
+    "availabilitySetVeeamGatewayName": {
+      "type": "string",
+      "defaultValue": "AS-VeeamGateway",
+      "metadata": {
+        "description": "availability set name for Veeam Cloud Connect Gateway"
+      }
+    },
+    "availabilitySetWanAcceleratorName": {
+      "type": "string",
+      "defaultValue": "AS-VeeamWanAccelerator",
+      "metadata": {
+        "description": "availability set name for Veeam WAN Accelerator"
+      }
+    },
+    "availabilitySetFileServersName": {
+      "type": "string",
+      "defaultValue": "AS-VeeamFileServers",
+      "metadata": {
+        "description": "availability set name for Veeam File Servers"
+      }
+    },
+    "frontEndNsgName": {
+      "type": "string",
+      "defaultValue": "NSG-FrontEnd",
+      "metadata": {
+        "description": "Name of the front end NSG"
+      }
+    },
+    "backEndNsgName": {
+      "type": "string",
+      "defaultValue": "NSG-BackEnd",
+      "metadata": {
+        "description": "Name of the back end NSG"
+      }
+    },
+    "virtualNetworkName": {
+      "type": "string",
+      "defaultValue": "vNET-VEEAM",
+      "metadata": {
+        "description": "Virtual Network Name"
+      }
+    },
+    "virtualNetworkPrefix": {
+      "type": "string",
+      "defaultValue": "10.11.0.0/16",
+      "metadata": {
+        "description": "Virtual Network Prefix"
+      }
+    },
+    "internalSubnetName": {
+      "type": "string",
+      "defaultValue": "Internal",
+      "metadata": {
+        "description": "Internal subnet name"
+      }
+    },
+    "internalSubnetPrefix": {
+      "type": "string",
+      "defaultValue": "10.11.0.0/24",
+      "metadata": {
+        "description": "Internal subnet prefix"
+      }
+    },
+    "clusterSubnetName": {
+      "type": "string",
+      "defaultValue": "Cluster",
+      "metadata": {
+        "description": "Cluster subnet name"
+      }
+    },
+    "clusterSubnetPrefix": {
+      "type": "string",
+      "defaultValue": "10.11.2.0/24",
+      "metadata": {
+        "description": "Cluster subnet prefix"
+      }
+    },
+    "externalSubnetname": {
+      "type": "string",
+      "defaultValue": "External",
+      "metadata": {
+        "description": "External subnet name"
+      }
+    },
+    "externalSubnetPrefix": {
+      "type": "string",
+      "defaultValue": "10.11.1.0/24",
+      "metadata": {
+        "description": "External subnet prefix"
+      }
+    },
+    "domainControllerIPPrefix": {
+      "type": "string",
+      "defaultValue": "10.11.0.2",
+      "metadata": {
+        "description": "Beginning of the IP address of DC (completed by the number of server)"
+      }
+    },
+    "veeamGatewayIPPrefix": {
+      "type": "string",
+      "defaultValue": "10.11.1.3",
+      "metadata": {
+        "description": "Beginning of the IP address of Veeam Gateways (completed by the number of server)"
+      }
+    },
+    "veeamCloudConnectIPPrefix": {
+      "type": "string",
+      "defaultValue": "10.11.0.4",
+      "metadata": {
+        "description": "Beginning of the IP address of Veeam Cloud Connects (completed by the number of server)"
+      }
+    },
+    "veeamWanAcceleratorIPPrefix": {
+      "type": "string",
+      "defaultValue": "10.11.0.5",
+      "metadata": {
+        "description": "Beginning of the IP address of Wan Accelerators (completed by the number of server)"
+      }
+    },
+    "veeamFileServerIPPrefix": {
+      "type": "string",
+      "defaultValue": "10.11.0.6",
+      "metadata": {
+        "description": "Beginning of the IP address of file servers (completed by the number of server)"
+      }
+    },
+    "veeamFileServerClusterIPPrefix": {
+      "type": "string",
+      "defaultValue": "10.11.2.6",
+      "metadata": {
+        "description": "Beginning of the IP address of file servers on cluster network (completed by the number of server)"
+      }
+    },
+    "PublicIPAddressName": {
+      "type": "string",
+      "defaultValue": "PIP-LoadBalancer",
+      "metadata": {
+        "description": "Public IP for the load balancer"
+      }
+    },
+    "trafficManagerName": {
+      "type": "string",
+      "defaultValue": "TM-VeeamGateway",
+      "metadata": {
+        "description": "Name of the Traffic Manager for Veeam Gateway"
+      }
+    },
+    "trafficManagerDNSName": {
+      "type": "string",
+      "defaultValue": "SeromITVeeam",
+      "metadata": {
+        "description": "DNS name of the traffic manager"
+      }
+    },
+    "numberOfDomainController": {
+      "type": "int",
+      "defaultValue": 2,
+      "minValue": 1,
+      "maxValue": 9,
+      "metadata": {
+        "description": "Number of Domain Controllers"
+      }
+    },
+    "numberOfVeeamGateway": {
+      "type": "int",
+      "defaultValue": 2,
+      "minValue": 1,
+      "maxValue": 9,
+      "metadata": {
+        "description": "Number of Veeam Cloud Connect Gateway to deploy"
+      }
+    },
+    "numberOfVeeamCloudConnect": {
+      "type": "int",
+      "defaultValue": 2,
+      "minValue": 1,
+      "maxValue": 9,
+      "metadata": {
+        "description": "Number of Veeam Cloud Connect to deploy"
+      }
+    },
+    "numberOfVeeamWanAccelerator": {
+      "type": "int",
+      "defaultValue": 1,
+      "minValue": 1,
+      "maxValue": 9,
+      "metadata": {
+        "description": "Number of Wan Accelerator to deploy"
+      }
+    },
+    "numberOfFileServers": {
+      "type": "int",
+      "defaultValue": 4,
+      "minValue": 4,
+      "maxValue": 6,
+      "metadata": {
+        "description": "Number of file servers to deploy"
+      }
+    },
+    "storageAccountName": {
+      "type": "string",
+      "defaultValue": "stologsacct",
+      "minLength": 3,
+      "maxLength": 24,
+      "metadata": {
+        "description": "Storage account name for diagnostic logs"
+      }
+    },
+    "domainControllerVmName": {
+      "type": "string",
+      "defaultValue": "AZADS0",
+      "minLength": 1,
+      "maxLength": 14,
+      "metadata": {
+        "description": "Domain Controller name"
+      }
+    },
+    "veeamCloudConnectVmName": {
+      "type": "string",
+      "defaultValue": "AZVCC0",
+      "minLength": 1,
+      "maxLength": 14,
+      "metadata": {
+        "description": "Veeam Cloud Connect VM name"
+      }
+    },
+    "veeamGatewayVmName": {
+      "type": "string",
+      "defaultValue": "AZVGW0",
+      "minLength": 1,
+      "maxLength": 14,
+      "metadata": {
+        "description": "Veeam Gateway VM name"
+      }
+    },
+    "veeamWanAcceleratorVmName": {
+      "type": "string",
+      "defaultValue": "AZVWA0",
+      "minLength": 1,
+      "maxLength": 14,
+      "metadata": {
+        "description": "Veeam Wan Accelerator VM name"
+      }
+    },
+    "veeamFileServerVmName": {
+      "type": "string",
+      "defaultValue": "AZFLS0",
+      "minLength": 1,
+      "maxLength": 14,
+      "metadata": {
+        "description": "File Server name"
+      }
+    },
+    "domainControllerVmSize": {
+      "type": "string",
+      "defaultValue": "Standard_DS1",
+      "allowedValues": [
+        "Standard_DS1",
+        "Standard_DS2",
+        "Standard_DS3",
+        "Standard_DS4"
+      ],
+      "metadata": {
+        "description": "Domain Controllers VM Size"
+      }
+    },
+    "veeamCloudConnectVmSize": {
+      "type": "string",
+      "defaultValue": "Standard_DS1",
+      "allowedValues": [
+        "Standard_DS1",
+        "Standard_DS2",
+        "Standard_DS3",
+        "Standard_DS4"
+      ],
+      "metadata": {
+        "description": "veeam Cloud Connect VM Size"
+      }
+    },
+    "veeamGatewayVmSize": {
+      "type": "string",
+      "defaultValue": "Standard_DS1",
+      "allowedValues": [
+        "Standard_DS1",
+        "Standard_DS2",
+        "Standard_DS3",
+        "Standard_DS4"
+      ],
+      "metadata": {
+        "description": "Veeam Gateway VM size"
+      }
+    },
+    "veeamWanAcceleratorVmSize": {
+      "type": "string",
+      "defaultValue": "Standard_DS1",
+      "allowedValues": [
+        "Standard_DS1",
+        "Standard_DS2",
+        "Standard_DS3",
+        "Standard_DS4"
+      ],
+      "metadata": {
+        "description": "Veeam Wan Accelerator VM size"
+      }
+    },
+    "veeamFileServerVmSize": {
+      "type": "string",
+      "defaultValue": "Standard_DS2",
+      "allowedValues": [
+        "Standard_DS2",
+        "Standard_DS3",
+        "Standard_DS4"
+      ],
+      "metadata": {
+        "description": "File Server size"
+      }
+    }
+  },
+  "variables": {
+    "computeResourcesApiVersion": "2016-04-30-preview",
+    "NetworkResourcesApiVersion": "2016-03-30",
+    "StorageResourcesAPIVersion": "2016-05-01",
+    "ResourcesLocation": "[ResourceGroup().location]",
+    "vNETID": "[resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworkName'))]",
+    "publicIPAddressID": "[resourceId('Microsoft.Network/publicIPAddresses',parameters('publicIPAddressName'))]",
+    "vNETSubExtRef": "[concat(variables('vNETID'), '/subnets/', parameters('externalSubnetname'))]",
+    "vNETSubIntRef": "[concat(variables('vNETID'), '/subnets/', parameters('internalSubnetname'))]",
+    "vNETSubCluRef": "[concat(variables('vNETID'), '/subnets/', parameters('clusterSubnetname'))]"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Compute/availabilitySets",
+      "sku": {
+        "name": "Aligned"
+      },
+      "name": "[parameters('availabilitySetDomainControllersName')]",
+      "apiVersion": "[variables('computeResourcesApiVersion')]",
+      "location": "[variables('ResourcesLocation')]",
+      "tags": {
+        "displayName": "Availability Set - Domain Controllers"
+      },
+      "properties": {
+        "platformUpdateDomainCount": 5,
+        "platformFaultDomainCount": 3
+      }
+    },
+    {
+      "type": "Microsoft.Compute/availabilitySets",
+      "sku": {
+        "name": "Aligned"
+      },
+      "name": "[parameters('availabilitySetVeeamCloudConnectName')]",
+      "apiVersion": "[variables('computeResourcesApiVersion')]",
+      "location": "[variables('ResourcesLocation')]",
+      "tags": {
+        "displayName": "Availability Set - Veeam Cloud Connect"
+      },
+      "properties": {
+        "platformUpdateDomainCount": 5,
+        "platformFaultDomainCount": 3
+      }
+    },
+    {
+      "type": "Microsoft.Compute/availabilitySets",
+      "sku": {
+        "name": "Aligned"
+      },
+      "name": "[parameters('availabilitySetVeeamGatewayName')]",
+      "apiVersion": "[variables('computeResourcesApiVersion')]",
+      "location": "[variables('ResourcesLocation')]",
+      "tags": {
+        "displayName": "Availability Set - Veeam Gateway"
+      },
+      "properties": {
+        "platformUpdateDomainCount": 5,
+        "platformFaultDomainCount": 3
+      }
+    },
+    {
+      "type": "Microsoft.Compute/availabilitySets",
+      "sku": {
+        "name": "Aligned"
+      },
+      "name": "[parameters('availabilitySetFileServersName')]",
+      "apiVersion": "[variables('computeResourcesApiVersion')]",
+      "location": "[variables('ResourcesLocation')]",
+      "tags": {
+        "displayName": "Availability Set - Veeam File Servers"
+      },
+      "properties": {
+        "platformUpdateDomainCount": "[parameters('numberOfFileServers')]",
+        "platformFaultDomainCount": 3
+      }
+    },
+    {
+      "apiVersion": "[variables('NetworkResourcesApiVersion')]",
+      "type": "Microsoft.Network/networkSecurityGroups",
+      "name": "[parameters('frontEndNsgName')]",
+      "location": "[variables('ResourcesLocation')]",
+      "tags": {
+        "displayName": "NSG - Front End"
+      },
+      "properties": {
+        "securityRules": [
+          {
+            "name": "Veeam_Cloud_Gateway",
+            "properties": {
+              "description": "Allow Cloud Connect",
+              "protocol": "Tcp",
+              "sourcePortRange": "*",
+              "destinationPortRange": "6180",
+              "sourceAddressPrefix": "Internet",
+              "destinationAddressPrefix": "*",
+              "access": "Allow",
+              "priority": 101,
+              "direction": "Inbound"
+            }
+          }
+
+        ]
+      }
+    },
+    {
+      "apiVersion": "[variables('NetworkResourcesApiVersion')]",
+      "type": "Microsoft.Network/networkSecurityGroups",
+      "name": "[parameters('backEndNsgName')]",
+      "location": "[variables('ResourcesLocation')]",
+      "tags": {
+        "displayName": "NSG - Back End"
+      },
+      "properties": {
+        "securityRules": [
+          {
+            "name": "VeeamConsole",
+            "properties": {
+              "description": "Allow Cloud Console",
+              "protocol": "Tcp",
+              "sourcePortRange": "*",
+              "destinationPortRange": "9392",
+              "sourceAddressPrefix": "Internet",
+              "destinationAddressPrefix": "*",
+              "access": "Allow",
+              "priority": 101,
+              "direction": "Inbound"
+            }
+          },
+          {
+            "name": "RemoteManagement",
+            "properties": {
+              "description": "Allow Veeam Remote Management",
+              "protocol": "Tcp",
+              "sourcePortRange": "*",
+              "destinationPortRange": "10003",
+              "sourceAddressPrefix": "Internet",
+              "destinationAddressPrefix": "*",
+              "access": "Allow",
+              "priority": 102,
+              "direction": "Inbound"
+            }
+          },
+          {
+            "name": "RDP",
+            "properties": {
+              "description": "Allow RDP",
+              "protocol": "Tcp",
+              "sourcePortRange": "*",
+              "destinationPortRange": "3389",
+              "sourceAddressPrefix": "Internet",
+              "destinationAddressPrefix": "10.11.0.0/24",
+              "access": "Allow",
+              "priority": 103,
+              "direction": "Inbound"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "apiVersion": "[variables('NetworkResourcesApiVersion')]",
+      "location": "[variables('ResourcesLocation')]",
+      "name": "[parameters('virtualNetworkName')]",
+      "properties": {
+        "addressSpace": {
+          "addressPrefixes": [
+            "[parameters('virtualNetworkPrefix')]"
+          ]
+        },
+        "dhcpOptions": {
+          "dnsServers": [
+            "[concat(parameters('domainControllerIPPrefix'),'0')]",
+            "[concat(parameters('domainControllerIPPrefix'),'1')]"
+          ]
+        },
+        "subnets": [
+          {
+            "name": "[parameters('internalSubnetName')]",
+            "properties": {
+              "addressPrefix": "[parameters('internalSubnetPrefix')]"
+            }
+          },
+          {
+            "name": "[parameters('clusterSubnetName')]",
+            "properties": {
+              "addressPrefix": "[parameters('clusterSubnetPrefix')]"
+            }
+          },
+          {
+            "name": "[parameters('externalSubnetName')]",
+            "properties": {
+              "addressPrefix": "[parameters('externalSubnetPrefix')]"
+            }
+          }
+        ]
+      },
+      "tags": {
+        "displayName": "Virtual Network"
+      },
+      "type": "Microsoft.Network/virtualNetworks"
+    },
+    {
+      "apiVersion": "[variables('NetworkResourcesApiVersion')]",
+      "location": "[variables('ResourcesLocation')]",
+      "name": "[concat('PIP-',parameters('veeamGatewayVmName'),copyIndex())]",
+      "copy": {
+        "name": "veeamGwPipLoop",
+        "count": "[parameters('numberOfVeeamGateway')]"
+      },
+      "properties": {
+        "publicIPAllocationMethod": "Static",
+        "dnsSettings": {
+          "domainNameLabel": "[toLower(concat(parameters('veeamGatewayVmName'), copyIndex()))]"
+        }
+      },
+      "tags": {
+        "displayName": "Public IP Address - Veeam Gateway"
+      },
+      "type": "Microsoft.Network/publicIPAddresses"
+    },
+    {
+      "apiVersion": "[variables('NetworkResourcesApiVersion')]",
+      "location": "[variables('ResourcesLocation')]",
+      "name": "[concat('PIP-',parameters('veeamCloudConnectVmName'),copyIndex())]",
+      "copy": {
+        "name": "veeamGwPipLoop",
+        "count": "[parameters('numberOfVeeamCloudConnect')]"
+      },
+      "properties": {
+        "publicIPAllocationMethod": "Static"
+      },
+      "tags": {
+        "displayName": "Public IP Address - Veeam Cloud Connect (for admin)"
+      },
+      "type": "Microsoft.Network/publicIPAddresses"
+    },
+    {
+      "name": "[parameters('storageAccountName')]",
+      "type": "Microsoft.Storage/storageAccounts",
+      "apiVersion": "[variables('StorageResourcesAPIVersion')]",
+      "tags": {
+        "displayName": "Log Storage Account"
+      },
+      "sku": {
+        "name": "Standard_LRS"
+      },
+      "kind": "Storage",
+      "location": "[variables('ResourcesLocation')]"
+    },
+    {
+      "apiVersion": "2017-05-01",
+      "type": "Microsoft.Network/trafficmanagerprofiles",
+      "name": "[parameters('trafficManagerName')]",
+      "location": "global",
+      "tags": {
+        "displayName": "Traffic Manager"
+      },
+      "properties": {
+        "trafficRoutingMethod": "Weighted",
+        "dnsConfig": {
+          "relativeName": "[parameters('trafficManagerDNSName')]",
+          "ttl": 300
+        },
+        "monitorConfig": {
+          "protocol": "TCP",
+          "port": 6180
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Network/networkInterfaces",
+      "name": "[concat(parameters('domainControllerVmName'), copyindex())]",
+      "apiVersion": "[variables('NetworkResourcesApiVersion')]",
+      "location": "[variables('ResourcesLocation')]",
+      "tags": {
+        "displayName": "Network Adapter - Domain Controller"
+      },
+      "dependsOn": [
+        "[concat('Microsoft.Network/virtualNetworks/', parameters('virtualNetworkName'))]"
+      ],
+      "copy": {
+        "name": "veeamDCNicLoop",
+        "count": "[parameters('numberOfDomainController')]"
+      },
+      "properties": {
+        "ipConfigurations": [
+          {
+            "name": "ipconfig1",
+            "properties": {
+              "privateIPAllocationMethod": "Static",
+              "privateIPAddress": "[concat(parameters('domainControllerIPPrefix'), copyindex())]",
+              "subnet": {
+                "id": "[Variables('vNetSubIntRef')]"
+              }
+            }
+          }
+        ],
+        "dnsSettings": {
+          "dnsServers": []
+        },
+        "enableIPForwarding": false
+      }
+    },
+    {
+      "type": "Microsoft.Network/networkInterfaces",
+      "name": "[concat(parameters('veeamGatewayVmName'), copyindex())]",
+      "apiVersion": "[variables('NetworkResourcesApiVersion')]",
+      "location": "[variables('ResourcesLocation')]",
+      "tags": {
+        "displayName": "Network Adapter - Veeam Gateway"
+      },
+      "dependsOn": [
+        "[concat('Microsoft.Network/virtualNetworks/', parameters('virtualNetworkName'))]",
+        "[concat('Microsoft.Network/publicIPAddresses/', concat('PIP-',parameters('veeamGatewayVmName'), copyIndex()))]"
+      ],
+      "copy": {
+        "name": "veeamGatewayNicLoop",
+        "count": "[parameters('numberOfVeeamGateway')]"
+      },
+      "properties": {
+        "ipConfigurations": [
+          {
+            "name": "ipconfig1",
+            "properties": {
+              "privateIPAllocationMethod": "Static",
+              "privateIPAddress": "[concat(parameters('veeamGatewayIPPrefix'), copyindex())]",
+              "publicIPAddress": {
+                "id": "[resourceId('Microsoft.Network/publicIPAddresses',concat('PIP-',parameters('veeamGatewayVmName'), copyIndex()))]"
+              },
+              "subnet": {
+                "id": "[Variables('vNetSubExtRef')]"
+              }
+            }
+          }
+        ],
+        "dnsSettings": {
+          "dnsServers": []
+        },
+        "enableIPForwarding": false
+      }
+    },
+    {
+      "type": "Microsoft.Network/networkInterfaces",
+      "name": "[concat(parameters('veeamCloudConnectVmName'), copyindex())]",
+      "apiVersion": "[variables('NetworkResourcesApiVersion')]",
+      "location": "[variables('ResourcesLocation')]",
+      "tags": {
+        "displayName": "Network Adapter - Veeam Cloud Connect"
+      },
+      "dependsOn": [
+        "[concat('Microsoft.Network/virtualNetworks/', parameters('virtualNetworkName'))]"
+      ],
+      "copy": {
+        "name": "veeamCloudConnectNicLoop",
+        "count": "[parameters('numberOfVeeamCloudConnect')]"
+      },
+      "properties": {
+        "ipConfigurations": [
+          {
+            "name": "ipconfig1",
+            "properties": {
+              "privateIPAllocationMethod": "Static",
+              "privateIPAddress": "[concat(parameters('veeamCloudConnectIPPrefix'), copyindex())]",
+              "publicIPAddress": {
+                "id": "[resourceId('Microsoft.Network/publicIPAddresses',concat('PIP-',parameters('veeamCloudConnectVmName'), copyIndex()))]"
+              },
+              "subnet": {
+                "id": "[Variables('vNetSubIntRef')]"
+              }
+            }
+          }
+        ],
+        "dnsSettings": {
+          "dnsServers": []
+        },
+        "enableIPForwarding": false
+      }
+    },
+    {
+      "type": "Microsoft.Network/networkInterfaces",
+      "name": "[concat(parameters('veeamWanAcceleratorVmName'), copyindex())]",
+      "apiVersion": "[variables('NetworkResourcesApiVersion')]",
+      "location": "[variables('ResourcesLocation')]",
+      "tags": {
+        "displayName": "Network Adapter - Veeam Wan Accelerator"
+      },
+      "dependsOn": [
+        "[concat('Microsoft.Network/virtualNetworks/', parameters('virtualNetworkName'))]"
+      ],
+      "copy": {
+        "name": "veeamWANNicLoop",
+        "count": "[parameters('numberOfVeeamWanAccelerator')]"
+      },
+      "properties": {
+        "ipConfigurations": [
+          {
+            "name": "ipconfig1",
+            "properties": {
+              "privateIPAllocationMethod": "Static",
+              "privateIPAddress": "[concat(parameters('veeamWanAcceleratorIPPrefix'), copyindex())]",
+              "subnet": {
+                "id": "[Variables('vNetSubIntRef')]"
+              }
+            }
+          }
+        ],
+        "dnsSettings": {
+          "dnsServers": []
+        },
+        "enableIPForwarding": false
+      }
+    },
+    {
+      "type": "Microsoft.Network/networkInterfaces",
+      "name": "[concat(parameters('veeamFileServerVmName'), copyindex())]",
+      "apiVersion": "[variables('NetworkResourcesApiVersion')]",
+      "location": "[variables('ResourcesLocation')]",
+      "tags": {
+        "displayName": "Network Adapter - Veeam File Servers"
+      },
+      "dependsOn": [
+        "[concat('Microsoft.Network/virtualNetworks/', parameters('virtualNetworkName'))]"
+      ],
+      "copy": {
+        "name": "veeamFileServerNicLoop",
+        "count": "[parameters('numberOfFileServers')]"
+      },
+      "properties": {
+        "ipConfigurations": [
+          {
+            "name": "ipconfig1",
+            "properties": {
+              "privateIPAllocationMethod": "Static",
+              "privateIPAddress": "[concat(parameters('veeamFileServerIPPrefix'), copyindex())]",
+              "subnet": {
+                "id": "[Variables('vNetSubIntRef')]"
+              }
+            }
+          }
+        ],
+        "dnsSettings": {
+          "dnsServers": []
+        },
+        "enableIPForwarding": false
+      }
+    },
+    {
+      "type": "Microsoft.Network/networkInterfaces",
+      "name": "[concat(parameters('veeamFileServerVmName'), copyindex(),'-cluster')]",
+      "apiVersion": "[variables('NetworkResourcesApiVersion')]",
+      "location": "[variables('ResourcesLocation')]",
+      "tags": {
+        "displayName": "Network Adapter (Cluster) - Veeam File Servers"
+      },
+      "dependsOn": [
+        "[concat('Microsoft.Network/virtualNetworks/', parameters('virtualNetworkName'))]"
+      ],
+      "copy": {
+        "name": "veeamFileServerNicLoop",
+        "count": "[parameters('numberOfFileServers')]"
+      },
+      "properties": {
+        "ipConfigurations": [
+          {
+            "name": "ipconfig1",
+            "properties": {
+              "privateIPAllocationMethod": "Static",
+              "privateIPAddress": "[concat(parameters('veeamFileServerClusterIPPrefix'), copyindex())]",
+              "subnet": {
+                "id": "[Variables('vNetSubCluRef')]"
+              }
+            }
+          }
+        ],
+        "dnsSettings": {
+          "dnsServers": []
+        },
+        "enableIPForwarding": false
+      }
+    },
+    {
+      "type": "Microsoft.Compute/disks",
+      "name": "[concat(parameters('domainControllerVmName'), copyindex(),'-Data')]",
+      "apiVersion": "[variables('computeResourcesApiVersion')]",
+      "location": "[variables('ResourcesLocation')]",
+      "tags": {
+        "displayName": "Data disk - Domain Controllers"
+      },
+      "copy": {
+        "name": "DCDskLoop",
+        "count": "[parameters('numberOfDomainController')]"
+      },
+      "properties": {
+        "creationData": {
+          "createOption": "Empty"
+        },
+        "accountType": "Premium_LRS",
+        "diskSizeGB": 10
+      }
+    },
+    {
+      "type": "Microsoft.Compute/disks",
+      "name": "[concat(parameters('veeamCloudConnectVmName'), copyindex(),'-Data')]",
+      "apiVersion": "[variables('computeResourcesApiVersion')]",
+      "location": "[variables('ResourcesLocation')]",
+      "tags": {
+        "displayName": "Data disk - Veeam Cloud Connect"
+      },
+      "copy": {
+        "name": "VCCDskLoop",
+        "count": "[parameters('numberOfVeeamCloudConnect')]"
+      },
+      "properties": {
+        "creationData": {
+          "createOption": "Empty"
+        },
+        "accountType": "Premium_LRS",
+        "diskSizeGB": 20
+      }
+    },
+    {
+      "type": "Microsoft.Compute/disks",
+      "name": "[concat(parameters('veeamWanAcceleratorVmName'), copyindex(),'-Data')]",
+      "apiVersion": "[variables('computeResourcesApiVersion')]",
+      "location": "[variables('ResourcesLocation')]",
+      "tags": {
+        "displayName": "Data disk - Veeam WAN Accelerator"
+      },
+      "copy": {
+        "name": "VWADskLoop",
+        "count": "[parameters('numberOfVeeamWanAccelerator')]"
+      },
+      "properties": {
+        "creationData": {
+          "createOption": "Empty"
+        },
+        "accountType": "Premium_LRS",
+        "diskSizeGB": 100
+      }
+    },
+    {
+      "type": "Microsoft.Compute/disks",
+      "name": "[concat(parameters('veeamFileServerVmName'), copyindex(),'-Data01')]",
+      "apiVersion": "[variables('computeResourcesApiVersion')]",
+      "location": "[variables('ResourcesLocation')]",
+      "tags": {
+        "displayName": "Data disk - Veeam File Servers"
+      },
+      "copy": {
+        "name": "VFSDskLoop",
+        "count": "[parameters('numberOfFileServers')]"
+      },
+      "properties": {
+        "creationData": {
+          "createOption": "Empty"
+        },
+        "accountType": "Premium_LRS",
+        "diskSizeGB": 100
+      }
+    },
+    {
+      "type": "Microsoft.Compute/disks",
+      "name": "[concat(parameters('veeamFileServerVmName'), copyindex(),'-Data02')]",
+      "apiVersion": "[variables('computeResourcesApiVersion')]",
+      "location": "[variables('ResourcesLocation')]",
+      "tags": {
+        "displayName": "Data disk - Veeam File Servers"
+      },
+      "copy": {
+        "name": "VFSDskLoop",
+        "count": "[parameters('numberOfFileServers')]"
+      },
+      "properties": {
+        "creationData": {
+          "createOption": "Empty"
+        },
+        "accountType": "Premium_LRS",
+        "diskSizeGB": 100
+      }
+    },
+    {
+      "type": "Microsoft.Compute/disks",
+      "name": "[concat(parameters('veeamFileServerVmName'), copyindex(),'-Data03')]",
+      "apiVersion": "[variables('computeResourcesApiVersion')]",
+      "location": "[variables('ResourcesLocation')]",
+      "tags": {
+        "displayName": "Data disk - Veeam File Servers"
+      },
+      "copy": {
+        "name": "VFSDskLoop",
+        "count": "[parameters('numberOfFileServers')]"
+      },
+      "properties": {
+        "creationData": {
+          "createOption": "Empty"
+        },
+        "accountType": "Premium_LRS",
+        "diskSizeGB": 100
+      }
+    },
+    {
+      "type": "Microsoft.Compute/disks",
+      "name": "[concat(parameters('veeamFileServerVmName'), copyindex(),'-Data04')]",
+      "apiVersion": "[variables('computeResourcesApiVersion')]",
+      "location": "[variables('ResourcesLocation')]",
+      "tags": {
+        "displayName": "Data disk - Veeam File Servers"
+      },
+      "copy": {
+        "name": "VFSDskLoop",
+        "count": "[parameters('numberOfFileServers')]"
+      },
+      "properties": {
+        "creationData": {
+          "createOption": "Empty"
+        },
+        "accountType": "Premium_LRS",
+        "diskSizeGB": 100
+      }
+    },
+    {
+      "name": "[concat(parameters('domainControllerVmName'), copyIndex())]",
+      "type": "Microsoft.Compute/virtualMachines",
+      "apiVersion": "[variables('computeResourcesApiVersion')]",
+      "location": "[variables('ResourcesLocation')]",
+      "tags": {
+        "displayName": "VMs - Domain Controllers"
+      },
+      "dependsOn": [
+        "[concat('Microsoft.Network/networkInterfaces/', parameters('domainControllerVmName'), copyindex())]",
+        "[concat('Microsoft.Compute/availabilitySets/',parameters('availabilitySetDomainControllersName'))]",
+        "[concat('Microsoft.Storage/storageAccounts/', parameters('storageAccountName'))]"
+      ],
+      "copy": {
+        "name": "domainControllerVmLoop",
+        "count": "[parameters('numberOfDomainController')]"
+      },
+      "properties": {
+        "osProfile": {
+          "computerName": "[concat(parameters('domainControllerVmName'), copyIndex())]",
+          "adminUsername": "[parameters('adminUsername')]",
+          "adminPassword": "[parameters('adminPassword')]",
+          "windowsConfiguration": {
+            "provisionVmAgent": "true"
+          }
+        },
+        "hardwareProfile": {
+          "vmSize": "[parameters('DomainControllerVmSize')]"
+        },
+        "storageProfile": {
+          "imageReference": {
+            "publisher": "MicrosoftWindowsServer",
+            "offer": "WindowsServer",
+            "sku": "2016-Datacenter-smalldisk",
+            "version": "latest"
+          },
+          "osDisk": {
+            "name": "[concat(parameters('domainControllerVmName'), copyIndex(), '-OS')]",
+            "createOption": "FromImage",
+            "managedDisk": {
+              "storageAccountType": "Premium_LRS"
+            }
+          },
+          "dataDisks": [
+            {
+              "lun": 2,
+              "name": "[concat(parameters('domainControllerVmName'), copyindex(),'-Data')]",
+              "createOption": "Attach",
+              "managedDisk": {
+                "id": "[resourceId('Microsoft.Compute/disks', concat(parameters('domainControllerVmName'), copyindex(),'-Data'))]"
+              }
+            }
+          ]
+        },
+        "networkProfile": {
+          "networkInterfaces": [
+            {
+              "id": "[resourceId('Microsoft.Network/networkInterfaces', concat(parameters('domainControllerVmName'), copyIndex()))]"
+            }
+          ]
+        },
+        "diagnosticsProfile": {
+          "bootDiagnostics": {
+            "enabled": true,
+            "storageUri": "[concat('https', '://', parameters('storageAccountName'), '.blob.core.windows.net', '/')]"
+          }
+        },
+        "availabilitySet": {
+          "id": "[resourceId('Microsoft.Compute/availabilitySets', parameters('availabilitySetDomainControllersName'))]"
+        }
+
+      }
+    },
+    {
+      "name": "[concat(parameters('veeamGatewayVmName'), copyIndex())]",
+      "type": "Microsoft.Compute/virtualMachines",
+      "apiVersion": "[variables('computeResourcesApiVersion')]",
+      "location": "[variables('ResourcesLocation')]",
+      "tags": {
+        "displayName": "VMs - Veeam Gateway VMs"
+      },
+      "dependsOn": [
+        "[concat('Microsoft.Network/networkInterfaces/', parameters('veeamGatewayVmName'), copyindex())]",
+        "[concat('Microsoft.Compute/availabilitySets/',parameters('availabilitySetVeeamGatewayName'))]",
+        "[concat('Microsoft.Storage/storageAccounts/', parameters('storageAccountName'))]"
+      ],
+      "copy": {
+        "name": "veeamGatewayVmLoop",
+        "count": "[parameters('numberOfVeeamGateway')]"
+      },
+      "properties": {
+        "osProfile": {
+          "computerName": "[concat(parameters('veeamGatewayVmName'), copyIndex())]",
+          "adminUsername": "[parameters('adminUsername')]",
+          "adminPassword": "[parameters('adminPassword')]",
+          "windowsConfiguration": {
+            "provisionVmAgent": "true"
+          }
+        },
+        "hardwareProfile": {
+          "vmSize": "[parameters('veeamGatewayVmSize')]"
+        },
+        "storageProfile": {
+          "imageReference": {
+            "publisher": "MicrosoftWindowsServer",
+            "offer": "WindowsServer",
+            "sku": "2016-Datacenter-smalldisk",
+            "version": "latest"
+          },
+          "osDisk": {
+            "name": "[concat(parameters('veeamGatewayVmName'), copyIndex(), '-OS')]",
+            "createOption": "FromImage",
+            "managedDisk": {
+              "storageAccountType": "Premium_LRS"
+            }
+          },
+          "dataDisks": []
+        },
+        "networkProfile": {
+          "networkInterfaces": [
+            {
+              "id": "[resourceId('Microsoft.Network/networkInterfaces', concat(parameters('veeamGatewayVmName'), copyIndex()))]"
+            }
+          ]
+        },
+        "diagnosticsProfile": {
+          "bootDiagnostics": {
+            "enabled": true,
+            "storageUri": "[concat('https', '://', parameters('storageAccountName'), '.blob.core.windows.net', '/')]"
+          }
+        },
+        "availabilitySet": {
+          "id": "[resourceId('Microsoft.Compute/availabilitySets', parameters('availabilitySetVeeamGatewayName'))]"
+        }
+
+      }
+    },
+    {
+      "apiVersion": "[variables('computeResourcesApiVersion')]",
+      "dependsOn": [
+        "[concat('Microsoft.Network/networkInterfaces/', parameters('veeamCloudConnectVmName'), copyindex())]",
+        "[concat('Microsoft.Compute/availabilitySets/',parameters('availabilitySetVeeamCloudConnectName'))]",
+        "[concat('Microsoft.Storage/storageAccounts/', parameters('storageAccountName'))]"
+      ],
+      "copy": {
+        "name": "veeamCloudConnectVmLoop",
+        "count": "[parameters('numberOfVeeamCloudConnect')]"
+      },
+      "location": "[variables('ResourcesLocation')]",
+      "name": "[concat(parameters('veeamCloudConnectVmName'), copyIndex())]",
+      "plan": {
+        "name": "veeamcloudcconnectenterprise",
+        "publisher": "veeam",
+        "product": "veeam-cloud-connect-enterprise"
+      },
+      "properties": {
+        "osProfile": {
+          "computerName": "[concat(parameters('veeamCloudConnectVmName'), copyIndex())]",
+          "adminUsername": "[parameters('adminUsername')]",
+          "adminPassword": "[parameters('adminPassword')]",
+          "windowsConfiguration": {
+            "provisionVmAgent": "true"
+          }
+        },
+        "hardwareProfile": {
+          "vmSize": "[parameters('veeamCloudConnectVmSize')]"
+        },
+        "storageProfile": {
+          "imageReference": {
+            "publisher": "veeam",
+            "offer": "veeam-cloud-connect-enterprise",
+            "sku": "veeamcloudcconnectenterprise",
+            "version": "latest"
+          },
+          "osDisk": {
+            "name": "[concat(parameters('veeamCloudConnectVmName'), copyindex(),'-OS')]",
+            "createOption": "FromImage",
+            "managedDisk": {
+              "storageAccountType": "Premium_LRS"
+            }
+          },
+          "dataDisks": [
+            {
+              "lun": 2,
+              "name": "[concat(parameters('veeamCloudConnectVmName'), copyindex(),'-Data')]",
+              "createOption": "Attach",
+              "managedDisk": {
+                "id": "[resourceId('Microsoft.Compute/disks', concat(parameters('veeamCloudConnectVmName'), copyindex(),'-Data'))]"
+              }
+            }
+          ]
+        },
+        "networkProfile": {
+          "networkInterfaces": [
+            {
+              "id": "[resourceId('Microsoft.Network/networkInterfaces', concat(parameters('veeamCloudConnectVmName'), copyIndex()))]"
+            }
+          ]
+        },
+        "diagnosticsProfile": {
+          "bootDiagnostics": {
+            "enabled": true,
+            "storageUri": "[concat('https', '://', parameters('storageAccountName'), '.blob.core.windows.net', '/')]"
+          }
+        },
+        "availabilitySet": {
+          "id": "[resourceId('Microsoft.Compute/availabilitySets', parameters('availabilitySetVeeamCloudConnectName'))]"
+        }
+      },
+      "tags": {
+        "displayName": "VMs - Veeam Cloud Connect VMs"
+      },
+      "type": "Microsoft.Compute/virtualMachines"
+    },
+    {
+      "name": "[concat(parameters('veeamWanAcceleratorVmName'), copyIndex())]",
+      "type": "Microsoft.Compute/virtualMachines",
+      "apiVersion": "[variables('computeResourcesApiVersion')]",
+      "location": "[variables('ResourcesLocation')]",
+      "tags": {
+        "displayName": "VMs - Veeam Wan Accelerator"
+      },
+      "dependsOn": [
+        "[concat('Microsoft.Network/networkInterfaces/', parameters('veeamWanAcceleratorVmName'), copyindex())]",
+        "[concat('Microsoft.Network/networkInterfaces/', parameters('veeamWanAcceleratorVmName'), copyIndex())]",
+        "[concat('Microsoft.Storage/storageAccounts/', parameters('storageAccountName'))]"
+      ],
+      "copy": {
+        "name": "veeamWanAccelerator",
+        "count": "[parameters('numberOfVeeamWanAccelerator')]"
+      },
+      "properties": {
+        "osProfile": {
+          "computerName": "[concat(parameters('veeamWanAcceleratorVmName'), copyIndex())]",
+          "adminUsername": "[parameters('adminUsername')]",
+          "adminPassword": "[parameters('adminPassword')]",
+          "windowsConfiguration": {
+            "provisionVmAgent": "true"
+          }
+        },
+        "hardwareProfile": {
+          "vmSize": "[parameters('veeamWanAcceleratorVmSize')]"
+        },
+        "storageProfile": {
+          "imageReference": {
+            "publisher": "MicrosoftWindowsServer",
+            "offer": "WindowsServer",
+            "sku": "2016-Datacenter-smalldisk",
+            "version": "latest"
+          },
+          "osDisk": {
+            "name": "[concat(parameters('veeamWanAcceleratorVmName'), copyIndex(), '-OS')]",
+            "createOption": "FromImage",
+            "managedDisk": {
+              "storageAccountType": "Premium_LRS"
+            }
+          },
+          "dataDisks": [
+            {
+              "lun": 2,
+              "name": "[concat(parameters('veeamWanAcceleratorVmName'), copyindex(),'-Data')]",
+              "createOption": "Attach",
+              "managedDisk": {
+                "id": "[resourceId('Microsoft.Compute/disks', concat(parameters('veeamWanAcceleratorVmName'), copyindex(),'-Data'))]"
+              }
+            }
+          ]
+        },
+        "networkProfile": {
+          "networkInterfaces": [
+            {
+              "id": "[resourceId('Microsoft.Network/networkInterfaces', concat(parameters('veeamWanAcceleratorVmName'), copyIndex()))]"
+            }
+          ]
+        },
+        "diagnosticsProfile": {
+          "bootDiagnostics": {
+            "enabled": true,
+            "storageUri": "[concat('https', '://', parameters('storageAccountName'), '.blob.core.windows.net', '/')]"
+          }
+        }
+      }
+    },
+    {
+      "name": "[concat(parameters('veeamFileServerVmName'), copyIndex())]",
+      "type": "Microsoft.Compute/virtualMachines",
+      "apiVersion": "[variables('computeResourcesApiVersion')]",
+      "location": "[variables('ResourcesLocation')]",
+      "tags": {
+        "displayName": "VMs - Veeam File Servers"
+      },
+      "dependsOn": [
+        "[concat('Microsoft.Network/networkInterfaces/', parameters('veeamFileServerVmName'), copyindex())]",
+        "[concat('Microsoft.Network/networkInterfaces/', parameters('veeamFileServerVmName'), copyindex(),'-cluster')]",
+        "[concat('Microsoft.Compute/availabilitySets/',parameters('availabilitySetFileServersName'))]",
+        "[concat('Microsoft.Storage/storageAccounts/', parameters('storageAccountName'))]"
+      ],
+      "copy": {
+        "name": "veeamFileServersVmLoop",
+        "count": "[parameters('numberOfFileServers')]"
+      },
+      "properties": {
+        "osProfile": {
+          "computerName": "[concat(parameters('veeamFileServerVmName'), copyIndex())]",
+          "adminUsername": "[parameters('adminUsername')]",
+          "adminPassword": "[parameters('adminPassword')]",
+          "windowsConfiguration": {
+            "provisionVmAgent": "true"
+          }
+        },
+        "hardwareProfile": {
+          "vmSize": "[parameters('veeamFileServerVmSize')]"
+        },
+        "storageProfile": {
+          "imageReference": {
+            "publisher": "MicrosoftWindowsServer",
+            "offer": "WindowsServer",
+            "sku": "2016-Datacenter-smalldisk",
+            "version": "latest"
+          },
+          "osDisk": {
+            "name": "[concat(parameters('veeamFileServerVmName'), copyIndex(), '-OS')]",
+            "createOption": "FromImage",
+            "managedDisk": {
+              "storageAccountType": "Premium_LRS"
+            }
+          },
+          "dataDisks": [
+            {
+              "lun": 2,
+              "name": "[concat(parameters('veeamFileServerVmName'), copyindex(),'-Data01')]",
+              "createOption": "Attach",
+              "managedDisk": {
+                "id": "[resourceId('Microsoft.Compute/disks', concat(parameters('veeamFileServerVmName'), copyindex(),'-Data01'))]"
+              }
+            },
+            {
+              "lun": 3,
+              "name": "[concat(parameters('veeamFileServerVmName'), copyindex(),'-Data02')]",
+              "createOption": "Attach",
+              "managedDisk": {
+                "id": "[resourceId('Microsoft.Compute/disks', concat(parameters('veeamFileServerVmName'), copyindex(),'-Data02'))]"
+              }
+            },
+            {
+              "lun": 4,
+              "name": "[concat(parameters('veeamFileServerVmName'), copyindex(),'-Data03')]",
+              "createOption": "Attach",
+              "managedDisk": {
+                "id": "[resourceId('Microsoft.Compute/disks', concat(parameters('veeamFileServerVmName'), copyindex(),'-Data03'))]"
+              }
+            },
+            {
+              "lun": 5,
+              "name": "[concat(parameters('veeamFileServerVmName'), copyindex(),'-Data04')]",
+              "createOption": "Attach",
+              "managedDisk": {
+                "id": "[resourceId('Microsoft.Compute/disks', concat(parameters('veeamFileServerVmName'), copyindex(),'-Data04'))]"
+              }
+            }
+          ]
+        },
+        "networkProfile": {
+          "networkInterfaces": [
+            {
+              "id": "[resourceId('Microsoft.Network/networkInterfaces', concat(parameters('veeamFileServerVmName'), copyIndex()))]",
+              "properties": { "primary": true }
+            },
+            {
+              "id": "[resourceId('Microsoft.Network/networkInterfaces', concat(parameters('veeamFileServerVmName'), copyIndex(),'-cluster'))]",
+              "properties": { "primary": false }
+            }
+          ]
+        },
+        "diagnosticsProfile": {
+          "bootDiagnostics": {
+            "enabled": true,
+            "storageUri": "[concat('https', '://', parameters('storageAccountName'), '.blob.core.windows.net', '/')]"
+          }
+        },
+        "availabilitySet": {
+          "id": "[resourceId('Microsoft.Compute/availabilitySets', parameters('availabilitySetFileServersName'))]"
+        }
+
+      }
+    }
+
+  ],
+  "outputs": {
+    "adminUsername": {
+      "type": "string",
+      "value": "[parameters('adminUsername')]"
+    }
+  }
+}
