@@ -108,7 +108,7 @@
         "description": "Cluster subnet prefix"
       }
     },
-    "externalSubnetname": {
+    "externalSubnetName": {
       "type": "string",
       "defaultValue": "External",
       "metadata": {
@@ -122,49 +122,49 @@
         "description": "External subnet prefix"
       }
     },
-    "domainControllerIPPrefix": {
+    "domainControllerIpPrefix": {
       "type": "string",
       "defaultValue": "10.11.0.2",
       "metadata": {
         "description": "Beginning of the IP address of DC (completed by the number of server)"
       }
     },
-    "veeamGatewayIPPrefix": {
+    "veeamGatewayIpPrefix": {
       "type": "string",
       "defaultValue": "10.11.1.3",
       "metadata": {
         "description": "Beginning of the IP address of Veeam Gateways (completed by the number of server)"
       }
     },
-    "veeamCloudConnectIPPrefix": {
+    "veeamCloudConnectIpPrefix": {
       "type": "string",
       "defaultValue": "10.11.0.4",
       "metadata": {
         "description": "Beginning of the IP address of Veeam Cloud Connects (completed by the number of server)"
       }
     },
-    "veeamWanAcceleratorIPPrefix": {
+    "veeamWanAcceleratorIpPrefix": {
       "type": "string",
       "defaultValue": "10.11.0.5",
       "metadata": {
         "description": "Beginning of the IP address of Wan Accelerators (completed by the number of server)"
       }
     },
-    "veeamFileServerIPPrefix": {
+    "veeamFileServerIpPrefix": {
       "type": "string",
       "defaultValue": "10.11.0.6",
       "metadata": {
         "description": "Beginning of the IP address of file servers (completed by the number of server)"
       }
     },
-    "veeamFileServerClusterIPPrefix": {
+    "veeamFileServerClusterIpPrefix": {
       "type": "string",
       "defaultValue": "10.11.2.6",
       "metadata": {
         "description": "Beginning of the IP address of file servers on cluster network (completed by the number of server)"
       }
     },
-    "PublicIPAddressName": {
+    "PublicIpAddressName": {
       "type": "string",
       "defaultValue": "PIP-LoadBalancer",
       "metadata": {
