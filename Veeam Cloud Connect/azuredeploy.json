@@ -178,7 +178,7 @@
         "description": "Name of the Traffic Manager for Veeam Gateway"
       }
     },
-    "trafficManagerDNSName": {
+    "trafficManagerDnsName": {
       "type": "string",
       "defaultValue": "SeromITVeeam",
       "metadata": {
@@ -189,7 +189,7 @@
       "type": "int",
       "defaultValue": 2,
       "minValue": 1,
-      "maxValue": 9,
+      "maxValue": 2,
       "metadata": {
         "description": "Number of Domain Controllers"
       }
@@ -198,7 +198,7 @@
       "type": "int",
       "defaultValue": 2,
       "minValue": 1,
-      "maxValue": 9,
+      "maxValue": 8,
       "metadata": {
         "description": "Number of Veeam Cloud Connect Gateway to deploy"
       }
@@ -207,7 +207,7 @@
       "type": "int",
       "defaultValue": 2,
       "minValue": 1,
-      "maxValue": 9,
+      "maxValue": 2,
       "metadata": {
         "description": "Number of Veeam Cloud Connect to deploy"
       }
@@ -528,7 +528,10 @@
           {
             "name": "[parameters('internalSubnetName')]",
             "properties": {
-              "addressPrefix": "[parameters('internalSubnetPrefix')]"
+              "addressPrefix": "[parameters('internalSubnetPrefix')]",
+              "networkSecurityGroup": {
+                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('backEndNsgName'))]"
+              }
             }
           },
           {
@@ -540,7 +543,10 @@
           {
             "name": "[parameters('externalSubnetName')]",
             "properties": {
-              "addressPrefix": "[parameters('externalSubnetPrefix')]"
+              "addressPrefix": "[parameters('externalSubnetPrefix')]",
+              "networkSecurityGroup": {
+                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('frontEndNSGName'))]"
+              }
             }
           }
         ]
