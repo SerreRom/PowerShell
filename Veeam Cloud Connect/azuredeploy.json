@@ -554,6 +554,10 @@
       "tags": {
         "displayName": "Virtual Network"
       },
+      "dependsOn": [
+        "[concat('Microsoft.Network/networkSecurityGroups/', parameters('backEndNsgName'))]",
+        "[concat('Microsoft.Network/networkSecurityGroups/', parameters('frontEndNsgName'))]"
+      ],
       "type": "Microsoft.Network/virtualNetworks"
     },
     {
@@ -606,7 +610,7 @@
     },
     {
       "apiVersion": "2017-05-01",
-      "type": "Microsoft.Network/trafficmanagerprofiles",
+      "type": "Microsoft.Network/trafficManagerProfiles",
       "name": "[parameters('trafficManagerName')]",
       "location": "global",
       "tags": {
