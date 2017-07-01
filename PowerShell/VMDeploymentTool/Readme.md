@@ -1,6 +1,8 @@
-This set of tool enables to deploy hyper-v virtual machines from a template file. You can find below the current feature provided
+This set of tool enables to deploy hyper-v virtual machines from a template file. You can find below the current feature provided. I have added a word file for the documentation.
 
-(support only for Hyper-V host in WS2016 in a cluster):
+This tool is in beta and so some bugs could appears
+
+(support only for Hyper-V host in WS2016 in a cluster)
 
 - Deploy a complete Gen 2 Hyper-V Virtual Machine.
 - Set the main settings of the VM (vCPU, Memory, Note, integration services)
