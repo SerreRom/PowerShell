@@ -1,4 +1,4 @@
-This set of tool enables to deploy virtual machines from a template file. You can find below the current feature provided
+This set of tool enables to deploy hyper-v virtual machines from a template file. You can find below the current feature provided
 
 (support only for Hyper-V host in WS2016 in a cluster):
 
