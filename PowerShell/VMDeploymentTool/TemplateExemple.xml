@@ -1,0 +1,400 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<VirtualMachines>
+	<VM>
+		<Information>
+			<Name>VMBCK01</Name>
+			<Notes>Veeam Backup Replication 9.5</Notes>
+			<AutoStart>1</AutoStart>
+			<OSDisk>\\VMLib01\VHDX\W2016-Std-Gui-v1.0.vhdx</OSDisk>
+		</Information>
+		<Hardware>
+			<Gen>2</Gen>
+			<ProcessorCount>2</ProcessorCount>
+			<DynamicMemory>1</DynamicMemory>
+			<StartupMemory>2147483648</StartupMemory>
+			<MinimumMemory>1073741824</MinimumMemory>
+			<MaximumMemory>4294967296</MaximumMemory>
+			<SwitchName>SW-1G</SwitchName>
+		</Hardware>
+		<NetworkAdapter>
+			<Name>Management-0</Name>
+			<IPAddress>10.10.0.23</IPAddress>
+			<Netmask>24</Netmask>
+			<Gateway>10.10.0.1</Gateway>
+			<DNS>10.10.0.20,10.10.0.21</DNS>
+			<RegisterDNS>1</RegisterDNS>
+			<VID>0</VID>
+			<DeviceNaming>On</DeviceNaming>
+		</NetworkAdapter>
+		<AdditionalDisk>
+			<Name>Data.vhdx</Name>
+			<Size>2147483648</Size>
+			<Type>Dynamic</Type>
+		</AdditionalDisk>
+		<IntegrationServices>
+			<Service Name="Guest Service Interface" State="1" Description="Hyper-V Guest Service Interface" />
+			<Service Name="Heartbeat" State="1" Description="Hyper-V Heartbeat Service" />
+			<Service Name="Key-Value Pair Exchange" State="1" Description="Hyper-V Data Exchange Service" />
+			<Service Name="Shutdown" State="1" Description="Hyper-V Guest Shudown Service" />
+			<Service Name="Time Synchronization" State="0" Description="Hyper-V Time Synchronization Service" />
+			<Service Name="VSS" State="1" Description="Hyper-V Volume Shadow Copy Requestor" />
+		</IntegrationServices>
+	</VM>
+	<VM>
+		<Information>
+			<Name>VMBCK02</Name>
+			<Notes>Veeam Proxy Server</Notes>
+			<AutoStart>1</AutoStart>
+			<OSDisk>\\VMLib01\VHDX\W2016-Std-Core-v1.0.vhdx</OSDisk>
+		</Information>
+		<Hardware>
+			<Gen>2</Gen>
+			<ProcessorCount>2</ProcessorCount>
+			<DynamicMemory>1</DynamicMemory>
+			<StartupMemory>2147483648</StartupMemory>
+			<MinimumMemory>1073741824</MinimumMemory>
+			<MaximumMemory>4294967296</MaximumMemory>
+			<SwitchName>SW-1G</SwitchName>
+		</Hardware>
+		<NetworkAdapter>
+			<Name>Management-0</Name>
+			<IPAddress>10.10.0.24</IPAddress>
+			<Netmask>24</Netmask>
+			<Gateway>10.10.0.1</Gateway>
+			<DNS>10.10.0.20,10.10.0.21</DNS>
+			<RegisterDNS>1</RegisterDNS>
+			<VID>0</VID>
+			<DeviceNaming>On</DeviceNaming>
+		</NetworkAdapter>
+		<IntegrationServices>
+			<Service Name="Guest Service Interface" State="1" Description="Hyper-V Guest Service Interface" />
+			<Service Name="Heartbeat" State="1" Description="Hyper-V Heartbeat Service" />
+			<Service Name="Key-Value Pair Exchange" State="1" Description="Hyper-V Data Exchange Service" />
+			<Service Name="Shutdown" State="1" Description="Hyper-V Guest Shudown Service" />
+			<Service Name="Time Synchronization" State="0" Description="Hyper-V Time Synchronization Service" />
+			<Service Name="VSS" State="1" Description="Hyper-V Volume Shadow Copy Requestor" />
+		</IntegrationServices>
+	</VM>
+	<VM>
+		<Information>
+			<Name>VMBCK03</Name>
+			<Notes>WAN Accelerator</Notes>
+			<AutoStart>1</AutoStart>
+			<OSDisk>\\VMLib01\VHDX\W2016-Std-Core-v1.0.vhdx</OSDisk>
+		</Information>
+		<Hardware>
+			<Gen>2</Gen>
+			<ProcessorCount>2</ProcessorCount>
+			<DynamicMemory>1</DynamicMemory>
+			<StartupMemory>2147483648</StartupMemory>
+			<MinimumMemory>1073741824</MinimumMemory>
+			<MaximumMemory>4294967296</MaximumMemory>
+			<SwitchName>SW-1G</SwitchName>
+		</Hardware>
+		<NetworkAdapter>
+			<Name>Management-0</Name>
+			<IPAddress>10.10.0.49</IPAddress>
+			<Netmask>24</Netmask>
+			<Gateway>10.10.0.1</Gateway>
+			<DNS>10.10.0.20,10.10.0.21</DNS>
+			<RegisterDNS>1</RegisterDNS>
+			<VID>0</VID>
+			<DeviceNaming>On</DeviceNaming>
+		</NetworkAdapter>
+		<AdditionalDisk>
+			<Name>WANCache.vhdx</Name>
+			<Size>107374182400</Size>
+			<Type>Dynamic</Type>
+		</AdditionalDisk>
+		<IntegrationServices>
+			<Service Name="Guest Service Interface" State="1" Description="Hyper-V Guest Service Interface" />
+			<Service Name="Heartbeat" State="1" Description="Hyper-V Heartbeat Service" />
+			<Service Name="Key-Value Pair Exchange" State="1" Description="Hyper-V Data Exchange Service" />
+			<Service Name="Shutdown" State="1" Description="Hyper-V Guest Shudown Service" />
+			<Service Name="Time Synchronization" State="0" Description="Hyper-V Time Synchronization Service" />
+			<Service Name="VSS" State="1" Description="Hyper-V Volume Shadow Copy Requestor" />
+		</IntegrationServices>
+	</VM>
+	<VM>
+		<Information>
+			<Name>VMBCK04</Name>
+			<Notes>Veeam Enterprise Manager</Notes>
+			<AutoStart>1</AutoStart>
+			<OSDisk>\\VMLib01\VHDX\W2016-Std-Gui-v1.0.vhdx</OSDisk>
+		</Information>
+		<Hardware>
+			<Gen>2</Gen>
+			<ProcessorCount>2</ProcessorCount>
+			<DynamicMemory>1</DynamicMemory>
+			<StartupMemory>2147483648</StartupMemory>
+			<MinimumMemory>1073741824</MinimumMemory>
+			<MaximumMemory>4294967296</MaximumMemory>
+			<SwitchName>SW-1G</SwitchName>
+		</Hardware>
+		<NetworkAdapter>
+			<Name>Management-0</Name>
+			<IPAddress>10.10.0.26</IPAddress>
+			<Netmask>24</Netmask>
+			<Gateway>10.10.0.1</Gateway>
+			<DNS>10.10.0.20,10.10.0.21</DNS>
+			<RegisterDNS>1</RegisterDNS>
+			<VID>0</VID>
+			<DeviceNaming>On</DeviceNaming>
+		</NetworkAdapter>
+		<AdditionalDisk>
+			<Name>Data.vhdx</Name>
+			<Size>2147483648</Size>
+			<Type>Dynamic</Type>
+		</AdditionalDisk>
+		<IntegrationServices>
+			<Service Name="Guest Service Interface" State="1" Description="Hyper-V Guest Service Interface" />
+			<Service Name="Heartbeat" State="1" Description="Hyper-V Heartbeat Service" />
+			<Service Name="Key-Value Pair Exchange" State="1" Description="Hyper-V Data Exchange Service" />
+			<Service Name="Shutdown" State="1" Description="Hyper-V Guest Shudown Service" />
+			<Service Name="Time Synchronization" State="0" Description="Hyper-V Time Synchronization Service" />
+			<Service Name="VSS" State="1" Description="Hyper-V Volume Shadow Copy Requestor" />
+		</IntegrationServices>
+	</VM>
+	<VM>
+		<Information>
+			<Name>VMBCK05</Name>
+			<Notes>File Servers</Notes>
+			<AutoStart>1</AutoStart>
+			<OSDisk>\\VMLib01\VHDX\W2016-Std-Core-v1.0.vhdx</OSDisk>
+		</Information>
+		<Hardware>
+			<Gen>2</Gen>
+			<ProcessorCount>2</ProcessorCount>
+			<DynamicMemory>1</DynamicMemory>
+			<StartupMemory>2147483648</StartupMemory>
+			<MinimumMemory>1073741824</MinimumMemory>
+			<MaximumMemory>4294967296</MaximumMemory>
+			<SwitchName>SW-1G</SwitchName>
+		</Hardware>
+		<NetworkAdapter>
+			<Name>Management-0</Name>
+			<IPAddress>10.10.0.28</IPAddress>
+			<Netmask>24</Netmask>
+			<Gateway>10.10.0.1</Gateway>
+			<DNS>10.10.0.20,10.10.0.21</DNS>
+			<RegisterDNS>1</RegisterDNS>
+			<VID>0</VID>
+			<DeviceNaming>On</DeviceNaming>
+		</NetworkAdapter>
+		<AdditionalDisk>
+			<Name>Data.vhdx</Name>
+			<Size>107374182400</Size>
+			<Type>Dynamic</Type>
+		</AdditionalDisk>
+		<IntegrationServices>
+			<Service Name="Guest Service Interface" State="1" Description="Hyper-V Guest Service Interface" />
+			<Service Name="Heartbeat" State="1" Description="Hyper-V Heartbeat Service" />
+			<Service Name="Key-Value Pair Exchange" State="1" Description="Hyper-V Data Exchange Service" />
+			<Service Name="Shutdown" State="1" Description="Hyper-V Guest Shudown Service" />
+			<Service Name="Time Synchronization" State="0" Description="Hyper-V Time Synchronization Service" />
+			<Service Name="VSS" State="1" Description="Hyper-V Volume Shadow Copy Requestor" />
+		</IntegrationServices>
+	</VM>
+	<VM>
+		<Information>
+			<Name>VMSDS01</Name>
+			<Notes>S2D Node 1</Notes>
+			<AutoStart>0</AutoStart>
+			<OSDisk>\\VMLib01\VHDX\W2016-Dtc-Core-v1.0.vhdx</OSDisk>
+		</Information>
+		<Hardware>
+			<Gen>2</Gen>
+			<ProcessorCount>2</ProcessorCount>
+			<DynamicMemory>0</DynamicMemory>
+			<StartupMemory>8589934592</StartupMemory>
+			<MinimumMemory>1073741824</MinimumMemory>
+			<MaximumMemory>8589934592</MaximumMemory>
+			<SwitchName>SW-1G</SwitchName>
+		</Hardware>
+		<NetworkAdapter>
+			<Name>Management-0</Name>
+			<IPAddress>10.10.0.40</IPAddress>
+			<Netmask>24</Netmask>
+			<Gateway>10.10.0.1</Gateway>
+			<DNS>10.10.0.20,10.10.0.21</DNS>
+			<RegisterDNS>1</RegisterDNS>
+			<VID>0</VID>
+			<DeviceNaming>On</DeviceNaming>
+		</NetworkAdapter>
+		<AdditionalAdapters>
+			<Name>Cluster-100-01</Name>
+			<IPAddress>10.10.100.40</IPAddress>
+			<Netmask>24</Netmask>
+			<Gateway></Gateway>
+			<DNS></DNS>
+			<RegisterDNS>0</RegisterDNS>
+			<VID>100</VID>
+			<DeviceNaming>On</DeviceNaming>
+			<SwitchName>SW-1G</SwitchName>
+		</AdditionalAdapters>
+		<AdditionalAdapters>
+			<Name>Cluster-100-02</Name>
+			<IPAddress>10.10.100.140</IPAddress>
+			<Netmask>24</Netmask>
+			<Gateway></Gateway>
+			<DNS></DNS>
+			<RegisterDNS>0</RegisterDNS>
+			<VID>100</VID>
+			<DeviceNaming>On</DeviceNaming>
+			<SwitchName>SW-1G</SwitchName>
+		</AdditionalAdapters>
+		<AdditionalDisk>
+			<Name>Data01.vhdx</Name>
+			<Size>107374182400</Size>
+			<Type>Dynamic</Type>
+		</AdditionalDisk>
+		<AdditionalDisk>
+			<Name>Data02.vhdx</Name>
+			<Size>107374182400</Size>
+			<Type>Dynamic</Type>
+		</AdditionalDisk>
+		<AdditionalDisk>
+			<Name>Data03.vhdx</Name>
+			<Size>107374182400</Size>
+			<Type>Dynamic</Type>
+		</AdditionalDisk>
+		<AdditionalDisk>
+			<Name>Data04.vhdx</Name>
+			<Size>107374182400</Size>
+			<Type>Dynamic</Type>
+		</AdditionalDisk>
+		<AdditionalDisk>
+			<Name>Data05.vhdx</Name>
+			<Size>107374182400</Size>
+			<Type>Dynamic</Type>
+		</AdditionalDisk>
+		<AdditionalDisk>
+			<Name>Data06.vhdx</Name>
+			<Size>107374182400</Size>
+			<Type>Dynamic</Type>
+		</AdditionalDisk>
+		<AdditionalDisk>
+			<Name>Data07.vhdx</Name>
+			<Size>107374182400</Size>
+			<Type>Dynamic</Type>
+		</AdditionalDisk>
+		<AdditionalDisk>
+			<Name>Data08.vhdx</Name>
+			<Size>107374182400</Size>
+			<Type>Dynamic</Type>
+		</AdditionalDisk>
+		<IntegrationServices>
+			<Service Name="Guest Service Interface" State="1" Description="Hyper-V Guest Service Interface" />
+			<Service Name="Heartbeat" State="1" Description="Hyper-V Heartbeat Service" />
+			<Service Name="Key-Value Pair Exchange" State="1" Description="Hyper-V Data Exchange Service" />
+			<Service Name="Shutdown" State="1" Description="Hyper-V Guest Shudown Service" />
+			<Service Name="Time Synchronization" State="0" Description="Hyper-V Time Synchronization Service" />
+			<Service Name="VSS" State="1" Description="Hyper-V Volume Shadow Copy Requestor" />
+		</IntegrationServices>
+	</VM>
+	<VM>
+		<Information>
+			<Name>VMSDS02</Name>
+			<Notes>S2D Node 2</Notes>
+			<AutoStart>0</AutoStart>
+			<OSDisk>\\VMLib01\VHDX\W2016-Dtc-Core-v1.0.vhdx</OSDisk>
+		</Information>
+		<Hardware>
+			<Gen>2</Gen>
+			<ProcessorCount>4</ProcessorCount>
+			<DynamicMemory>0</DynamicMemory>
+			<StartupMemory>8589934592</StartupMemory>
+			<MinimumMemory>1073741824</MinimumMemory>
+			<MaximumMemory>8589934592</MaximumMemory>
+			<SwitchName>SW-1G</SwitchName>
+		</Hardware>
+		<NetworkAdapter>
+			<Name>Management-0</Name>
+			<IPAddress>10.10.0.41</IPAddress>
+			<Netmask>24</Netmask>
+			<Gateway>10.10.0.1</Gateway>
+			<DNS>10.10.0.20,10.10.0.21</DNS>
+			<RegisterDNS>1</RegisterDNS>
+			<VID>0</VID>
+			<DeviceNaming>On</DeviceNaming>
+		</NetworkAdapter>
+		<AdditionalAdapters>
+			<Name>Cluster-100-01</Name>
+			<IPAddress>10.10.100.41</IPAddress>
+			<Netmask>24</Netmask>
+			<Gateway></Gateway>
+			<DNS></DNS>
+			<RegisterDNS>0</RegisterDNS>
+			<VID>100</VID>
+			<DeviceNaming>On</DeviceNaming>
+			<SwitchName>SW-1G</SwitchName>
+		</AdditionalAdapters>
+		<AdditionalAdapters>
+			<Name>Cluster-100-02</Name>
+			<IPAddress>10.10.100.141</IPAddress>
+			<Netmask>24</Netmask>
+			<Gateway></Gateway>
+			<DNS></DNS>
+			<RegisterDNS>0</RegisterDNS>
+			<VID>100</VID>
+			<DeviceNaming>On</DeviceNaming>
+			<SwitchName>SW-1G</SwitchName>
+		</AdditionalAdapters>
+		<AdditionalDisk>
+			<Name>Data01.vhdx</Name>
+			<Size>107374182400</Size>
+			<Type>Dynamic</Type>
+		</AdditionalDisk>
+		<AdditionalDisk>
+			<Name>Data02.vhdx</Name>
+			<Size>107374182400</Size>
+			<Type>Dynamic</Type>
+		</AdditionalDisk>
+		<AdditionalDisk>
+			<Name>Data03.vhdx</Name>
+			<Size>107374182400</Size>
+			<Type>Dynamic</Type>
+		</AdditionalDisk>
+		<AdditionalDisk>
+			<Name>Data04.vhdx</Name>
+			<Size>107374182400</Size>
+			<Type>Dynamic</Type>
+		</AdditionalDisk>
+		<AdditionalDisk>
+			<Name>Data05.vhdx</Name>
+			<Size>107374182400</Size>
+			<Type>Dynamic</Type>
+		</AdditionalDisk>
+		<AdditionalDisk>
+			<Name>Data06.vhdx</Name>
+			<Size>107374182400</Size>
+			<Type>Dynamic</Type>
+		</AdditionalDisk>
+		<AdditionalDisk>
+			<Name>Data07.vhdx</Name>
+			<Size>107374182400</Size>
+			<Type>Dynamic</Type>
+		</AdditionalDisk>
+		<AdditionalDisk>
+			<Name>Data08.vhdx</Name>
+			<Size>107374182400</Size>
+			<Type>Dynamic</Type>
+		</AdditionalDisk>
+		<IntegrationServices>
+			<Service Name="Guest Service Interface" State="1" Description="Hyper-V Guest Service Interface" />
+			<Service Name="Heartbeat" State="1" Description="Hyper-V Heartbeat Service" />
+			<Service Name="Key-Value Pair Exchange" State="1" Description="Hyper-V Data Exchange Service" />
+			<Service Name="Shutdown" State="1" Description="Hyper-V Guest Shudown Service" />
+			<Service Name="Time Synchronization" State="0" Description="Hyper-V Time Synchronization Service" />
+			<Service Name="VSS" State="1" Description="Hyper-V Volume Shadow Copy Requestor" />
+		</IntegrationServices>
+	</VM>
+	<Hosts>
+		<Cluster Name="Cluster-hyv01" />
+	</Hosts>		
+	<Domain>
+		<Name>HomeCloud.net</Name>
+		<OUPath>OU=Computers,OU=Servers,DC=HomeCloud,DC=net</OUPath>
+		<Account>sa-ads-join</Account>
+	</Domain>
+</VirtualMachines>
