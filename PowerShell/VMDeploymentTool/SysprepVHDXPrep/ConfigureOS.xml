@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration>
+  <ComputerName></ComputerName>
+  <NetAdapters>
+  </NetAdapters>
+  <Domain>
+    <Name></Name>
+    <OUPath></OUPath>
+    <Account></Account>
+    <Password></Password>
+  </Domain>
+</Configuration>
