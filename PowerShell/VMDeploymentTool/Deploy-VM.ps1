@@ -144,15 +144,15 @@ Function Validate-XMLFile {
         }
         Write-Host "   Check passed." -ForegroundColor Green -BackgroundColor Black
         # Check vhdx file
-        Write-Host "Check 5: validate $($VM.Information.OSDisk.Path)" -ForegroundColor Yellow -BackgroundColor Black
+        Write-Host "Check 5: validate $($VM.Information.OSDisk)" -ForegroundColor Yellow -BackgroundColor Black
         Try {
-            Resolve-Path -Path $VM.Information.OSDisk.Path -ErrorAction Stop
+            Resolve-Path -Path $VM.Information.OSDisk -ErrorAction Stop
         }
         Catch {
              Write-Host "$($Error[0].Exception.Message). Exiting script" -ForegroundColor Red -BackgroundColor Black
              Exit
         }
-        Write-Host "Check passed. $($VM.Information.OSDisk.Path) exists" -ForegroundColor Green -BackgroundColor Black
+        Write-Host "Check passed. $($VM.Information.OSDisk) exists" -ForegroundColor Green -BackgroundColor Black
     }
     Write-Host "All VMs passed checks." -ForegroundColor Green -BackgroundColor Black
 
@@ -456,7 +456,7 @@ $ClusterNodes = Get-Cluster $Template.VirtualMachines.Hosts.Cluster.Name | Get-C
 
 Foreach ($VM in $Template.VirtualMachines.VM){
 
-    $OSTemplate = $VM.Information.OSDisk.Path
+    $OSTemplate = $VM.Information.OSDisk
     $TimeStart = Get-Date
     Write-Host "Detecting the Hyper-V node with the less number of vm..." -ForegroundColor Green -BackgroundColor Black
     
