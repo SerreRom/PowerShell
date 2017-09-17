@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ClusterConfiguration>
+	<ActiveDirectory>
+		<Domain>SeromIT.local</Domain>
+		<CNOOU>OU=CNO,OU=Servers,DC=SeromIT,DC=Local</CNOOU>
+	</ActiveDirectory>
+	<Settings>
+		<Nodes>PYHYV01,PYHYV02</Nodes>
+		<ClusterName>Cluster-Hyv01</ClusterName>
+		<ClusterIPAddress>10.10.101.9</ClusterIPAddress>
+		<ClusterBlockCacheSize>2048</ClusterBlockCacheSize>
+		<WitnessAccountName>cloudwitnesses</WitnessAccountName>
+		<WitnessAccessKey>KrJdba6QPV2yKZJqCcFf2rX3M2K9x0KH/rr1pTbUSm74lpIPx+rX/L6BwcAMmloCjIGxbqktw5FU/jLOfl/g0A==</WitnessAccessKey>
+		<PoolName>VMPool</PoolName>
+		<MGMTNetworkName>Management</MGMTNetworkName>
+		<ClusterNetworkName>Cluster</ClusterNetworkName>
+	</Settings>
+	<Volumes>
+		<Volume Name="CSV-01" Size="697932185600" />
+		<Volume Name="CSV-02" Size="697932185600" />
+	</Volumes>
+</ClusterConfiguration>
