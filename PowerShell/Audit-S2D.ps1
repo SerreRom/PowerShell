@@ -1172,11 +1172,18 @@ $ClusterS2D          = 1
 
 Clear
 
-# Get Cluster object
-$Cluster = Get-Cluster -Name $($ClusterName + "." + $DomainName)
+Try {
+    # Get Cluster object
+    $Cluster = Get-Cluster -Name $($ClusterName + "." + $DomainName) -ErrorAction Stop
 
-# Get Hyper-V nodes in the cluster
-$VMHosts = Get-ClusterNode -Cluster $($ClusterName + "." + $DomainName) | Select Name
+    # Get Hyper-V nodes in the cluster
+    $VMHosts = Get-ClusterNode -Cluster $($ClusterName + "." + $DomainName) -ErrorAction Stop | Select Name
+
+}
+Catch {
+    Write-Error "Can't connect to cluster: $($Error[0].Exception.Message)"
+    Exit
+}
 
 ## If the module is enabled, run each function to collect information
 
