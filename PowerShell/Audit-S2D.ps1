@@ -6,6 +6,7 @@
 .VERSION
     0.1: Initial version
     0.2: Add option to export path
+    0.3: Change consolidation rate to not take into account hyperthreading
 .AUTHOR
     Romain Serre
     Blog: https://www.tech-coffee.net
@@ -988,16 +989,16 @@ Function Get-PhysicalDiskInfo {
         # for each storage pool
         Foreach ($StoragePool in $StoragePools){
 
-            # Show a progress bar
-            Write-Progress -Activity "Collecting Hyper-V/S2D infrastructure information" `
-                           -PercentComplete (($i/$StoragePools.Count)*100) `
-                           -CurrentOperation "Collecting physical disk information on $($ClusterName)"
-            $i++
-
             # Get physical disk in the storage pool
             $PhysicalDisks = $StoragePool | Get-PhysicalDisk
             # For each physical disk
             Foreach ($PhysicalDisk in $PhysicalDisks){
+
+                # Show a progress bar
+                Write-Progress -Activity "Collecting Hyper-V/S2D infrastructure information" `
+                               -PercentComplete (($i/$PhysicalDisks.Count)*100) `
+                               -CurrentOperation "Collecting physical disk information on $($ClusterName)"
+                $i++
                 
                 # gather information about Physical disks
                 $PDObj = New-Object System.Object
@@ -1189,7 +1190,6 @@ Try {
 
     $ComputerName = Get-Content ENV:COMPUTERNAME
     $TestHost     = $VMHosts |? Name -NotLike $ComputerName | Select -First 1
-    Write-Host $TestHost.Name
     $TestCim      = New-CimSession -ComputerName $TestHost.Name -Credential $Credential -ErrorAction Stop | Out-Null
     
 }
@@ -1419,21 +1419,23 @@ if ($HostHwInformation){
     Add-Content -Path $ExportLog -Value '</tr>'
     Foreach ($Node in $VMHostHwInformation){
         $NodeNbr++
-        $ThreadNbr   = 0
-        $CPUColsTemp = @()
-        $CPUNbr      = 0
+        $ThreadNbr     = 0
+        $CPUColsTemp   = @()
+        $CPUNbr        = 0
+        $NodeTotalCore = 0
 
         # Add each CPU information in a temporary array
         Foreach ($CPU in $Node.CPU){
             # CPUNbr enables to calculate the RowSpan in the HTML table
             $CPUNbr++
-            $TotalPhyCore += $CPU.NumberOfCores
-            $TotalCore    += $CPU.NumberOfLogicalProcessors
-            $ThreadNbr    += $($CPU.NumberOfLogicalProcessors)
-            $CPUColsTemp  += "<td>$($CPU.Name)</td>"
-            $CPUColsTemp  += "<td>$($CPU.DeviceId)</td>"
-            $CPUColsTemp  += "<td><span class=$ValueClass>$($CPU.NumberOfCores)</span><span class=$UnitClass>CORES</span></td>"
-            $CPUColsTemp  += "<td><span class=$ValueClass>$($CPU.NumberOfLogicalProcessors)</span><span class=$UnitClass>CORES</span></td>"
+            $NodeTotalCore += $CPU.NumberOfCores
+            $TotalPhyCore  += $CPU.NumberOfCores
+            $TotalCore     += $CPU.NumberOfLogicalProcessors
+            $ThreadNbr     += $($CPU.NumberOfLogicalProcessors)
+            $CPUColsTemp   += "<td>$($CPU.Name)</td>"
+            $CPUColsTemp   += "<td>$($CPU.DeviceId)</td>"
+            $CPUColsTemp   += "<td><span class=$ValueClass>$($CPU.NumberOfCores)</span><span class=$UnitClass>CORES</span></td>"
+            $CPUColsTemp   += "<td><span class=$ValueClass>$($CPU.NumberOfLogicalProcessors)</span><span class=$UnitClass>CORES</span></td>"
         }
 
         # export HTML content to $ExportLog
@@ -1455,7 +1457,7 @@ if ($HostHwInformation){
         }
 
         # if the consolidation rate is exceeded, change the CSS class to error
-        if ($HostWorkload.vCPU -gt ($TxConso*$ThreadNbr)){
+        if ($HostWorkload.vCPU -gt ($TxConso*$NodetotalCore)){
             $CPUClass = $TDError
         }
         Else {
@@ -1472,7 +1474,7 @@ if ($HostHwInformation){
             Add-Content -Path $ExportLog -Value "<td Class=$MemClass RowSpan=$CPUNbr><span class=$ValueClass>$([Math]::Round($HostWorkload.MemAssigned, 0))</span><span class=$UnitClass>GB</span></td>"
 
             # The consolidation rate is round to 2 décimal
-            $ConsoRate = [Math]::Round($HostWorkload.vCPU / $ThreadNbr, 2)
+            $ConsoRate = [Math]::Round($HostWorkload.vCPU / $NodeTotalCore, 2)
             if ($ConsoRate -ge 4){
                 $Class = $TDError
             }
@@ -1501,15 +1503,15 @@ if ($HostHwInformation){
     $TotalCore     = [Math]::Round(($TotalCore/$NodeNbr)*($NodeNbr-1), 0)
     $TotalMem      = ($TotalMem/$NodeNbr)*($NodeNbr-1)
     $TotalThread   = [Math]::Round(($TotalThread/$NodeNbr)*($NodeNbr-1), 0)
-    $vCPUAvailable = [Math]::Round($TxConso*$TotalThread, 0)
-    $ClusterTxRate = [Math]::Round($TotalvCPU / $TotalThread, 2)
+    $vCPUAvailable = [Math]::Round(($TxConso*($TotalPhyCore/$NodeNbr))*($NodeNbr-1), 0)
+    $ClusterTxRate = [Math]::Round($TotalvCPU / $TotalPhyCore, 2)
 
     # export the row for cluster information
     Add-Content -Path $ExportLog -Value '<tr>'
     Add-Content -Path $ExportLog -Value "<td class=$ComputerClass NOWRAP>$ClusterName<br><span class=$AdvertMessage>(N-1 to take care one host down)</span></td>"
     Add-Content -Path $ExportLog -Value "<td><span class=$ValueClass>$TotalMem</span><span class=$UnitClass>GB</span></td>"
     Add-Content -Path $ExportLog -Value "<td colspan=4><span class=$ValueClass>Consolidation rate $($TxConso):1</span></td>"
-    Add-Content -Path $ExportLog -Value "<td><span class=$ValueClass>$TotalThread</span><span class=$UnitClass>THREADS</span><br><span class=$ValueClass>$vCPUAvailable</span><span class=$UnitClass>vCPU</span></td>"
+    Add-Content -Path $ExportLog -Value "<td><span class=$ValueClass>$TotalCore</span><span class=$UnitClass>THREADS</span><br><span class=$ValueClass>$vCPUAvailable</span><span class=$UnitClass>vCPU</span></td>"
     Add-Content -Path $ExportLog -Value "<td><span class=$ValueClass>$TotalVMs</span><span class=$UnitClass>VMs</span></td>"
 
     # If vCPU allocated is greater than vCPU available, change CSS class to error
