@@ -1,0 +1,1249 @@
+<html> 
+<Head>
+<Title>Audit of cluster-hyv01 Hyper-V/S2D infrastructure - Date: 12/06/2017 18:43:24</title>
+<Style>
+body
+{
+    font-family: arial, verdana;
+    color: #333;
+    background-color: #DDD;
+    padding: 10px;
+    font-size: 14px;
+}
+
+h2
+{
+    font-size: 1.7em;
+    color: #800;
+}
+.table_main
+{
+    border-collapse: collapse;
+    background-color: #FFF;
+    font-size: 1em;
+    width: 100%;
+}
+
+.table_main th
+{
+    border: 1px solid #AAA;
+    background-color: #555;
+    padding: 10px;
+    color: #FFF;
+}
+
+.table_main td
+{
+    border: 1px solid #AAA;
+    text-align: center;
+    padding: 10px;
+}
+
+.td_computer
+{
+    background-color: #F5F5F5;
+    color: #333;
+    font-weight: bold;
+}
+
+.td_Error
+{
+    background-color: #F1302A;
+    color: #FFF;
+}
+
+.td_OK
+{
+    background-color: #46B810;
+    color: #FFF;
+}
+
+.td_empty
+{
+    
+}
+
+.span_Value
+{
+    font-size: 1.6em;
+}
+
+.span_Unit
+{
+    font-size: 1.2em;
+}
+
+.span_advert
+{
+    font-size: 0.8em;
+    font-weight: bold;
+    color: #888;
+}
+</style>
+<meta charset="utf-8"/>
+</Head>
+<body>
+<H2>Hyper-V Nodes and Cluster information</H2>
+<table Class=table_main>
+<tr>
+<th>Node Name</th>
+<th>Memory Installed</th>
+<th>CPU Name</th>
+<th>CPU deviceID</th>
+<th># Cores</th>
+<th># Logical Processors</th>
+<th>Total Logical Processors</th>
+<th># Virtual Machines</th>
+<th>vCPU used</th>
+<th>Memory used</th>
+<th>Consolidation rate</th>
+</tr>
+<tr>
+<td RowSpan=1 NOWRAP class=td_computer>PYHYV01.seromit.local</td>
+<td RowSpan=1><span class=span_Value>128</span><span class=span_Unit>GB</span></td>
+<td>Intel(R) Xeon(R) CPU E5-2620 v2 @ 2.10GHz</td>
+<td>CPU0</td>
+<td><span class=span_Value>6</span><span class=span_Unit>CORES</span></td>
+<td><span class=span_Value>12</span><span class=span_Unit>CORES</span></td>
+<td RowSpan=1><span class=span_Value>12</span><span class=span_Unit>THREADS</span></td>
+<td RowSpan=1><span class=span_Value>4</span><span class=span_Unit>VMs</span></td>
+<td Class=td_OK RowSpan=1><span class=span_Value>12</span><span class=span_Unit>vCPU</span></td>
+<td Class=td_OK RowSpan=1><span class=span_Value>32</span><span class=span_Unit>GB</span></td>
+<td RowSpan=1 Class=td_OK><span class=span_Value>2</td>
+</tr>
+<tr>
+<td RowSpan=1 NOWRAP class=td_computer>PYHYV02.seromit.local</td>
+<td RowSpan=1><span class=span_Value>128</span><span class=span_Unit>GB</span></td>
+<td>Intel(R) Xeon(R) CPU E5-2620 v2 @ 2.10GHz</td>
+<td>CPU0</td>
+<td><span class=span_Value>6</span><span class=span_Unit>CORES</span></td>
+<td><span class=span_Value>12</span><span class=span_Unit>CORES</span></td>
+<td RowSpan=1><span class=span_Value>12</span><span class=span_Unit>THREADS</span></td>
+<td RowSpan=1><span class=span_Value>9</span><span class=span_Unit>VMs</span></td>
+<td Class=td_OK RowSpan=1><span class=span_Value>22</span><span class=span_Unit>vCPU</span></td>
+<td Class=td_OK RowSpan=1><span class=span_Value>24</span><span class=span_Unit>GB</span></td>
+<td RowSpan=1 Class=td_OK><span class=span_Value>3.67</td>
+</tr>
+<tr>
+<td class=td_computer NOWRAP>cluster-hyv01<br><span class=span_advert>(N-1 to take care one host down)</span></td>
+<td><span class=span_Value>128</span><span class=span_Unit>GB</span></td>
+<td colspan=4><span class=span_Value>Consolidation rate 4:1</span></td>
+<td><span class=span_Value>12</span><span class=span_Unit>THREADS</span><br><span class=span_Value>24</span><span class=span_Unit>vCPU</span></td>
+<td><span class=span_Value>13</span><span class=span_Unit>VMs</span></td>
+<td Class=td_Error><span class=span_Value>34</span><span class=span_Unit>vCPU</span></td>
+<td class=td_OK><span class=span_Value>56</span><span class=span_Unit>GB</span></td>
+<td class=td_OK><span class=span_Value>2.83</span></td>
+</table>
+<H2>Network information</H2>
+<H3>Network information on PYHYV01</H3>
+<table Class=table_main>
+<tr>
+<th>NIC Name</th>
+<th>Description</th>
+<th>VLAN</th>
+<th>TCP/IP</th>
+<th>Link Speed</th>
+<th>RSS State</th>
+<th>RSS</th>
+<th>VMQ State</th>
+<th>VMQ</th>
+<th>RDMA State</th>
+<th>VMMQ State</th>
+<th>QoS</th>
+<th>MTU</th>
+<th>Switch Name</th>
+<th>Team Mapping</th>
+</tr>
+<tr>
+<td class=td_computer>vEthernet (SMB-103-02)<br><span class=span_advert>Virtual</span></td>
+<td>Hyper-V Virtual Ethernet Adapter #3</td>
+<td>Access: 103</td>
+<td class=td_computer>10.10.103.12/24<br><span class=span_advert>GW: </span><br><span class=span_advert>DNS: fec0:0:0:ffff::1 fec0:0:0:ffff::2 fec0:0:0:ffff::3</span><br><span class=span_advert>DNS Registration: False</span></td>
+<td>20 Gbps</td>
+<td class=span_Value>True</td>
+<td>8 - 10 (2)</td>
+<td class=span_Value>N/a</td>
+<td>N/a</td>
+<td class=span_Value>True</td>
+<td class=span_Value>True</td>
+<td class=span_Value>0</td>
+<td class=span_Value>9014</td>
+<td>SW-10G</td>
+<td>CNA02</td>
+</tr>
+<tr>
+<td class=td_computer>vEthernet (SMB-103-01)<br><span class=span_advert>Virtual</span></td>
+<td>Hyper-V Virtual Ethernet Adapter #2</td>
+<td>Access: 103</td>
+<td class=td_computer>10.10.103.10/24<br><span class=span_advert>GW: </span><br><span class=span_advert>DNS: fec0:0:0:ffff::1 fec0:0:0:ffff::2 fec0:0:0:ffff::3</span><br><span class=span_advert>DNS Registration: False</span></td>
+<td>20 Gbps</td>
+<td class=span_Value>True</td>
+<td>4 - 6 (2)</td>
+<td class=span_Value>N/a</td>
+<td>N/a</td>
+<td class=span_Value>True</td>
+<td class=span_Value>True</td>
+<td class=span_Value>0</td>
+<td class=span_Value>9014</td>
+<td>SW-10G</td>
+<td>CNA01</td>
+</tr>
+<tr>
+<td class=td_computer>vEthernet (MGMT-101)<br><span class=span_advert>Virtual</span></td>
+<td>Hyper-V Virtual Ethernet Adapter</td>
+<td>Untagged</td>
+<td class=td_computer>10.10.101.10/24<br><span class=span_advert>GW: 10.10.101.1</span><br><span class=span_advert>DNS: 10.10.201.2 10.10.201.3</span><br><span class=span_advert>DNS Registration: True</span></td>
+<td>20 Gbps</td>
+<td class=span_Value>True</td>
+<td>0 - 2 (2)</td>
+<td class=span_Value>N/a</td>
+<td>N/a</td>
+<td class=span_Value>False</td>
+<td class=span_Value>True</td>
+<td class=span_Value>0</td>
+<td class=span_Value>9014</td>
+<td>SW-10G</td>
+<td>Not Configured</td>
+</tr>
+<tr>
+<td class=td_computer>CNA01<br><span class=span_advert>Physical</span></td>
+<td>Mellanox ConnectX-3 Pro Ethernet Adapter</td>
+<td>Untagged</td>
+<td class=td_computer>N/a<br><span class=span_advert>GW: N/a</span><br><span class=span_advert>DNS: N/a</span><br><span class=span_advert>DNS Registration: N/a</span></td>
+<td>10 Gbps</td>
+<td class=span_Value>True</td>
+<td>0 - 10 (6)</td>
+<td class=span_Value>True</td>
+<td>0 - 63 (8)</td>
+<td class=span_Value>True</td>
+<td class=span_Value>N/a</td>
+<td class=span_Value>N/a</td>
+<td class=span_Value>9014</td>
+<td>N/a</td>
+<td>N/a</td>
+</tr>
+<tr>
+<td class=td_computer>CNA02<br><span class=span_advert>Physical</span></td>
+<td>Mellanox ConnectX-3 Pro Ethernet Adapter #2</td>
+<td>Untagged</td>
+<td class=td_computer>N/a<br><span class=span_advert>GW: N/a</span><br><span class=span_advert>DNS: N/a</span><br><span class=span_advert>DNS Registration: N/a</span></td>
+<td>10 Gbps</td>
+<td class=span_Value>True</td>
+<td>0 - 10 (6)</td>
+<td class=span_Value>True</td>
+<td>0 - 63 (8)</td>
+<td class=span_Value>True</td>
+<td class=span_Value>N/a</td>
+<td class=span_Value>N/a</td>
+<td class=span_Value>9014</td>
+<td>N/a</td>
+<td>N/a</td>
+</tr>
+</table>
+<H3>vSwitches on PYHYV01</H3>
+<table Class=table_main>
+<tr>
+<th>Switch Name</th>
+<th>Type</th>
+<th>Embedded Teaming</th>
+<th>Packet Direct</th>
+<th>SRIOV</th>
+<th>QoS Mode</th>
+<th>NICs</th>
+</tr>
+<tr>
+<td class=td_computer RowSpan=2 NOWRAP>SW-10G</td>
+<td RowSpan=2 NOWRAP>External</td>
+<td RowSpan=2 NOWRAP>True</td>
+<td RowSpan=2 NOWRAP>False</td>
+<td RowSpan=2 NOWRAP>False</td>
+<td RowSpan=2 NOWRAP>Absolute</td>
+<td class=td_computer>CNA02</td>
+</tr>
+<tr>
+<td class=td_computer>CNA01</td>
+</tr>
+</table>
+<H3>Network information on PYHYV02</H3>
+<table Class=table_main>
+<tr>
+<th>NIC Name</th>
+<th>Description</th>
+<th>VLAN</th>
+<th>TCP/IP</th>
+<th>Link Speed</th>
+<th>RSS State</th>
+<th>RSS</th>
+<th>VMQ State</th>
+<th>VMQ</th>
+<th>RDMA State</th>
+<th>VMMQ State</th>
+<th>QoS</th>
+<th>MTU</th>
+<th>Switch Name</th>
+<th>Team Mapping</th>
+</tr>
+<tr>
+<td class=td_computer>vEthernet (SMB-103-02)<br><span class=span_advert>Virtual</span></td>
+<td>Hyper-V Virtual Ethernet Adapter #3</td>
+<td>Access: 103</td>
+<td class=td_computer>10.10.103.13/24<br><span class=span_advert>GW: </span><br><span class=span_advert>DNS: fec0:0:0:ffff::1 fec0:0:0:ffff::2 fec0:0:0:ffff::3</span><br><span class=span_advert>DNS Registration: False</span></td>
+<td>20 Gbps</td>
+<td class=span_Value>True</td>
+<td>8 - 10 (2)</td>
+<td class=span_Value>N/a</td>
+<td>N/a</td>
+<td class=span_Value>True</td>
+<td class=span_Value>True</td>
+<td class=span_Value>0</td>
+<td class=span_Value>9014</td>
+<td>SW-10G</td>
+<td>CNA02</td>
+</tr>
+<tr>
+<td class=td_computer>vEthernet (SMB-103-01)<br><span class=span_advert>Virtual</span></td>
+<td>Hyper-V Virtual Ethernet Adapter #2</td>
+<td>Access: 103</td>
+<td class=td_computer>10.10.103.11/24<br><span class=span_advert>GW: </span><br><span class=span_advert>DNS: fec0:0:0:ffff::1 fec0:0:0:ffff::2 fec0:0:0:ffff::3</span><br><span class=span_advert>DNS Registration: False</span></td>
+<td>20 Gbps</td>
+<td class=span_Value>True</td>
+<td>4 - 6 (2)</td>
+<td class=span_Value>N/a</td>
+<td>N/a</td>
+<td class=span_Value>True</td>
+<td class=span_Value>True</td>
+<td class=span_Value>0</td>
+<td class=span_Value>9014</td>
+<td>SW-10G</td>
+<td>CNA01</td>
+</tr>
+<tr>
+<td class=td_computer>vEthernet (MGMT-101)<br><span class=span_advert>Virtual</span></td>
+<td>Hyper-V Virtual Ethernet Adapter</td>
+<td>Untagged</td>
+<td class=td_computer>10.10.101.11/24 10.10.101.9/24<br><span class=span_advert>GW: 10.10.101.1</span><br><span class=span_advert>DNS: 10.10.201.2 10.10.201.3</span><br><span class=span_advert>DNS Registration: True</span></td>
+<td>20 Gbps</td>
+<td class=span_Value>True</td>
+<td>0 - 2 (2)</td>
+<td class=span_Value>N/a</td>
+<td>N/a</td>
+<td class=span_Value>False</td>
+<td class=span_Value>True</td>
+<td class=span_Value>0</td>
+<td class=span_Value>9014</td>
+<td>SW-10G</td>
+<td>Not Configured</td>
+</tr>
+<tr>
+<td class=td_computer>CNA02<br><span class=span_advert>Physical</span></td>
+<td>Mellanox ConnectX-3 Pro Ethernet Adapter #2</td>
+<td>Untagged</td>
+<td class=td_computer>N/a<br><span class=span_advert>GW: N/a</span><br><span class=span_advert>DNS: N/a</span><br><span class=span_advert>DNS Registration: N/a</span></td>
+<td>10 Gbps</td>
+<td class=span_Value>True</td>
+<td>0 - 10 (6)</td>
+<td class=span_Value>True</td>
+<td>0 - 63 (8)</td>
+<td class=span_Value>True</td>
+<td class=span_Value>N/a</td>
+<td class=span_Value>N/a</td>
+<td class=span_Value>9014</td>
+<td>N/a</td>
+<td>N/a</td>
+</tr>
+<tr>
+<td class=td_computer>CNA01<br><span class=span_advert>Physical</span></td>
+<td>Mellanox ConnectX-3 Pro Ethernet Adapter</td>
+<td>Untagged</td>
+<td class=td_computer>N/a<br><span class=span_advert>GW: N/a</span><br><span class=span_advert>DNS: N/a</span><br><span class=span_advert>DNS Registration: N/a</span></td>
+<td>10 Gbps</td>
+<td class=span_Value>True</td>
+<td>0 - 10 (6)</td>
+<td class=span_Value>True</td>
+<td>0 - 63 (8)</td>
+<td class=span_Value>True</td>
+<td class=span_Value>N/a</td>
+<td class=span_Value>N/a</td>
+<td class=span_Value>9014</td>
+<td>N/a</td>
+<td>N/a</td>
+</tr>
+</table>
+<H3>vSwitches on PYHYV02</H3>
+<table Class=table_main>
+<tr>
+<th>Switch Name</th>
+<th>Type</th>
+<th>Embedded Teaming</th>
+<th>Packet Direct</th>
+<th>SRIOV</th>
+<th>QoS Mode</th>
+<th>NICs</th>
+</tr>
+<tr>
+<td class=td_computer RowSpan=2 NOWRAP>SW-10G</td>
+<td RowSpan=2 NOWRAP>External</td>
+<td RowSpan=2 NOWRAP>True</td>
+<td RowSpan=2 NOWRAP>False</td>
+<td RowSpan=2 NOWRAP>False</td>
+<td RowSpan=2 NOWRAP>Absolute</td>
+<td class=td_computer>CNA01</td>
+</tr>
+<tr>
+<td class=td_computer>CNA02</td>
+</tr>
+</table>
+<H2>Storage information</H2>
+<H3>Host storage information</H3>
+<table Class=table_main>
+<tr>
+<th>Node Name</th>
+<th>Drive Letter</th>
+<th>File System Label</th>
+<th>File System</th>
+<th>Size</th>
+<th>Size Remaining</th>
+<th>Percentage free space</th>
+</tr>
+<tr>
+<td class=td_computer rowspan=2 NOWRAP>PYHYV01.seromit.local</td>
+<td>C:\</td>
+<td>HOSTOS</td>
+<td>NTFS</td>
+<td><span class=span_Value>110.9</span><span class=span_Unit>GB</span></td>
+<td><span class=span_Value>80.4</span><span class=span_Unit>GB</span></td>
+<td class=td_OK><span class=span_Value>72.44</span><span class=span_Unit>%</span></td>
+</tr>
+<tr>
+<td class=td_empty></td>
+<td>WinRE</td>
+<td>NTFS</td>
+<td><span class=span_Value>0.5</span><span class=span_Unit>GB</span></td>
+<td><span class=span_Value>0.2</span><span class=span_Unit>GB</span></td>
+<td class=td_OK><span class=span_Value>37.44</span><span class=span_Unit>%</span></td>
+</tr>
+<tr>
+<td class=td_computer rowspan=2 NOWRAP>PYHYV02.seromit.local</td>
+<td class=td_empty></td>
+<td>WinRE</td>
+<td>NTFS</td>
+<td><span class=span_Value>0.5</span><span class=span_Unit>GB</span></td>
+<td><span class=span_Value>0.2</span><span class=span_Unit>GB</span></td>
+<td class=td_OK><span class=span_Value>37.44</span><span class=span_Unit>%</span></td>
+</tr>
+<tr>
+<td>C:\</td>
+<td>HOSTOS</td>
+<td>NTFS</td>
+<td><span class=span_Value>110.9</span><span class=span_Unit>GB</span></td>
+<td><span class=span_Value>69.1</span><span class=span_Unit>GB</span></td>
+<td class=td_OK><span class=span_Value>62.29</span><span class=span_Unit>%</span></td>
+</tr>
+</table>
+<H3>Cluster storage information</H3>
+<table Class=table_main>
+<tr>
+<th>Cluster Name</th>
+<th>CSV Name</th>
+<th>State</th>
+<th>Maintenance Mode</th>
+<th>Volume Name</th>
+<th>Size</th>
+<th>Size Remaining</th>
+<th>Percentage free space</th>
+</tr>
+<tr>
+<td class=td_computer rowspan=2 NOWRAP>cluster-hyv01</td>
+<td>CSV-01</td>
+<td class=td_OK><span class=span_Value>Online</span></td>
+<td class=td_OK><span class=span_Value>Disabled</span></td>
+<td>C:\ClusterStorage\CSV-01</td>
+<td><span class=span_Value>299.8</span><span class=span_Unit>GB</span></td>
+<td><span class=span_Value>58</span><span class=span_Unit>GB</span></td>
+<td class=td_OK><span class=span_Value>19.34</span><span class=span_Unit>%</span></td>
+</tr>
+<tr>
+<td>CSV-02</td>
+<td class=td_OK><span class=span_Value>Online</span></td>
+<td class=td_OK><span class=span_Value>Disabled</span></td>
+<td>C:\ClusterStorage\CSV-02</td>
+<td><span class=span_Value>299.8</span><span class=span_Unit>GB</span></td>
+<td><span class=span_Value>66.3</span><span class=span_Unit>GB</span></td>
+<td class=td_OK><span class=span_Value>22.11</span><span class=span_Unit>%</span></td>
+</tr>
+</table>
+<H3>Cluster network Information</H3>
+<table Class=table_main>
+<tr>
+<th>Cluster Name</th>
+<th>Network Name</th>
+<th>IP Address</th>
+<th>Address Mask</th>
+<th>Role</th>
+<th>State</th>
+</tr>
+<tr>
+<td class=td_computer RowSpan=2>cluster-hyv01</td>
+<td>Cluster<br><span class=span_advert>Live-Migration Network</span></td>
+<td>10.10.103.0</td>
+<td>255.255.255.0</td>
+<td class=>Cluster</td>
+<td class=td_OK><span class=span_Value>Up</span></td>
+</tr>
+<tr>
+<td>Management</td>
+<td>10.10.101.0</td>
+<td>255.255.255.0</td>
+<td class=>ClusterAndClient</td>
+<td class=td_OK><span class=span_Value>Up</span></td>
+</tr>
+</table>
+<H2>Host OS Information</H2>
+<table Class=table_main>
+<tr>
+<th>Node Name</th>
+<th>OS Version</th>
+<th>OS Language</th>
+<th>Firewall State</th>
+<th>HotFix installed</th>
+<th>Minimal Interface</th>
+</tr>
+<tr>
+<td RowSpan=3 class=td_computer>PYHYV01.seromit.local</td>
+<td RowSpan=3>Microsoft Windows Server 2016 Datacenter</td>
+<td RowSpan=3 class=td_OK><span class=span_Value>English &#8208; United States</span></td>
+<td class=td_OK>Domain: Enabled</td>
+<td RowSpan=3 class=td_OK><span class=span_Value>5</span></td>
+<td RowSpan=3 class=td_OK><span class=span_Value>Yes</span></td>
+</tr>
+<tr>
+<td class=td_OK>Private: Enabled</td>
+</tr>
+<tr>
+<td class=td_OK>Public: Enabled</td>
+</tr>
+<tr>
+<td RowSpan=3 class=td_computer>PYHYV02.seromit.local</td>
+<td RowSpan=3>Microsoft Windows Server 2016 Datacenter</td>
+<td RowSpan=3 class=td_OK><span class=span_Value>English &#8208; United States</span></td>
+<td class=td_OK>Domain: Enabled</td>
+<td RowSpan=3 class=td_OK><span class=span_Value>5</span></td>
+<td RowSpan=3 class=td_OK><span class=span_Value>Yes</span></td>
+</tr>
+<tr>
+<td class=td_OK>Private: Enabled</td>
+</tr>
+<tr>
+<td class=td_OK>Public: Enabled</td>
+</tr>
+</table>
+<H2>Hyper-V Information</H2>
+<table Class=table_main>
+<tr>
+<th>Node Name</th>
+<th>VM Path</th>
+<th>VHD Path</th>
+<th>Simultaneous Live-Migration</th>
+<th>Simultaneous Storage Live-Migration</th>
+<th>Live-Migration Authentication</th>
+<th>Live-Migration Performance option</th>
+</tr>
+<tr>
+<td class=td_computer>PYHYV01</td>
+<td>C:\ClusterStorage\csv-01\</td>
+<td>C:\ClusterStorage\csv-01\</td>
+<td class=span_Value>8</td>
+<td class=span_Value>8</td>
+<td>Kerberos</td>
+<td>SMB</td>
+</tr>
+<tr>
+<td class=td_computer>PYHYV02</td>
+<td>C:\ClusterStorage\csv-02\</td>
+<td>C:\ClusterStorage\csv-02\</td>
+<td class=span_Value>8</td>
+<td class=span_Value>8</td>
+<td>Kerberos</td>
+<td>SMB</td>
+</tr>
+</table>
+<H2>Cluster Information</H2>
+<table Class=table_main>
+<tr>
+<th>Node Name</th>
+<th>Node Number</th>
+<th>Quorum Type</th>
+<th>Quorum Resource</th>
+<th>Dynamic Witness</th>
+<th>Dynamic Quorum</th>
+<th>Block Cache Size</th>
+</tr>
+<tr>
+<td class=td_computer>cluster-hyv01</td>
+<td>2</td>
+<td>Majority</td>
+<td>File Share Witness</td>
+<td>1</td>
+<td>1</td>
+<td class=td_OK><span class=span_Value>8192</span><span class=span_Unit>MB</span></td>
+</tr>
+</table>
+<H2>Virtual Machines</H2>
+<table Class=table_main>
+<tr>
+<th>VM Name</th>
+<th>Hyper-V Host</th>
+<th>State</th>
+<th>Gen</th>
+<th>Clustered</th>
+<th>vCPU count</th>
+<th>Dynamic Memory</th>
+<th>Memory Demand</th>
+<th>Memory Assigned</th>
+<th>Disk Controller</th>
+<th>Disk Path</th>
+<th>Type</th>
+<th>Size</th>
+<th>Checkpoint</th>
+</tr>
+<tr>
+<td RowSpan=5 class=td_computer>VMSQL01</td>
+<td RowSpan=5>PYHYV01.seromit.local</td>
+<td RowSpan=5 class=td_OK><span class=span_Value>Running</span></td>
+<td RowSpan=5><span class=span_Value>2</span></td>
+<td RowSpan=5>Yes</td>
+<td RowSpan=5><span class=span_Value>4</span><span class=span_Unit>vCPU</span></td>
+<td RowSpan=5>No</td>
+<td RowSpan=5><span class=span_Value>10.9</span><span class=span_Unit>GB</span></td>
+<td RowSpan=5><span class=span_Value>16</span><span class=span_Unit>GB</span></td>
+<td class=td_OK>SCSI</td>
+<td class=td_OK>C:\ClusterStorage\csv-01\VMSQL01\W2016-1.0-Core.vhdx</td>
+<td>Dynamic</td>
+<td><span class=span_Value>60</span><span class=span_Unit>GB</span></td>
+<td RowSpan=5></td>
+</tr>
+<tr>
+<td class=td_OK>SCSI</td>
+<td class=td_OK>C:\ClusterStorage\csv-01\VMSQL01\Data.vhdx</td>
+<td>Dynamic</td>
+<td><span class=span_Value>20</span><span class=span_Unit>GB</span></td>
+</tr>
+<tr>
+<td class=td_OK>SCSI</td>
+<td class=td_OK>C:\ClusterStorage\csv-01\VMSQL01\Databases.vhdx</td>
+<td>Dynamic</td>
+<td><span class=span_Value>50</span><span class=span_Unit>GB</span></td>
+</tr>
+<tr>
+<td class=td_OK>SCSI</td>
+<td class=td_OK>C:\ClusterStorage\csv-01\VMSQL01\Logs.vhdx</td>
+<td>Dynamic</td>
+<td><span class=span_Value>50</span><span class=span_Unit>GB</span></td>
+</tr>
+<tr>
+<td class=td_OK>SCSI</td>
+<td class=td_OK>C:\ClusterStorage\csv-01\VMSQL01\Backups.vhdx</td>
+<td>Dynamic</td>
+<td><span class=span_Value>50</span><span class=span_Unit>GB</span></td>
+</tr>
+<tr>
+<td RowSpan=5 class=td_computer>VMSQL02</td>
+<td RowSpan=5>PYHYV01.seromit.local</td>
+<td RowSpan=5 class=td_OK><span class=span_Value>Running</span></td>
+<td RowSpan=5><span class=span_Value>2</span></td>
+<td RowSpan=5>Yes</td>
+<td RowSpan=5><span class=span_Value>4</span><span class=span_Unit>vCPU</span></td>
+<td RowSpan=5>No</td>
+<td RowSpan=5><span class=span_Value>10.6</span><span class=span_Unit>GB</span></td>
+<td RowSpan=5><span class=span_Value>16</span><span class=span_Unit>GB</span></td>
+<td class=td_OK>SCSI</td>
+<td class=td_OK>C:\ClusterStorage\csv-02\VMSQL02\W2016-1.0-Core.vhdx</td>
+<td>Dynamic</td>
+<td><span class=span_Value>60</span><span class=span_Unit>GB</span></td>
+<td RowSpan=5></td>
+</tr>
+<tr>
+<td class=td_OK>SCSI</td>
+<td class=td_OK>C:\ClusterStorage\csv-02\VMSQL02\Data.vhdx</td>
+<td>Dynamic</td>
+<td><span class=span_Value>20</span><span class=span_Unit>GB</span></td>
+</tr>
+<tr>
+<td class=td_OK>SCSI</td>
+<td class=td_OK>C:\ClusterStorage\csv-02\VMSQL02\Databases.vhdx</td>
+<td>Dynamic</td>
+<td><span class=span_Value>50</span><span class=span_Unit>GB</span></td>
+</tr>
+<tr>
+<td class=td_OK>SCSI</td>
+<td class=td_OK>C:\ClusterStorage\csv-02\VMSQL02\Logs.vhdx</td>
+<td>Dynamic</td>
+<td><span class=span_Value>50</span><span class=span_Unit>GB</span></td>
+</tr>
+<tr>
+<td class=td_OK>SCSI</td>
+<td class=td_OK>C:\ClusterStorage\csv-02\VMSQL02\Backups.vhdx</td>
+<td>Dynamic</td>
+<td><span class=span_Value>50</span><span class=span_Unit>GB</span></td>
+</tr>
+<tr>
+<td RowSpan=1 class=td_computer>zTemplate-W2016-1.0-Core</td>
+<td RowSpan=1>PYHYV01.seromit.local</td>
+<td RowSpan=1 class=td_Error><span class=span_Value>Off</span></td>
+<td RowSpan=1><span class=span_Value>2</span></td>
+<td RowSpan=1>Yes</td>
+<td RowSpan=1><span class=span_Value>2</span><span class=span_Unit>vCPU</span></td>
+<td RowSpan=1>Yes</td>
+<td RowSpan=1><span class=span_Value>0</span><span class=span_Unit>GB</span></td>
+<td RowSpan=1><span class=span_Value>0</span><span class=span_Unit>GB</span></td>
+<td class=td_OK>SCSI</td>
+<td class=td_OK>C:\ClusterStorage\csv-01\zTemplate-W2016-1.0-Core\zTemplate-W2016-1.0-Core.vhdx</td>
+<td>Dynamic</td>
+<td><span class=span_Value>60</span><span class=span_Unit>GB</span></td>
+<td RowSpan=1></td>
+</tr>
+<tr>
+<td RowSpan=1 class=td_computer>zTemplate-W2016-1.0-Gui</td>
+<td RowSpan=1>PYHYV01.seromit.local</td>
+<td RowSpan=1 class=td_Error><span class=span_Value>Off</span></td>
+<td RowSpan=1><span class=span_Value>2</span></td>
+<td RowSpan=1>Yes</td>
+<td RowSpan=1><span class=span_Value>2</span><span class=span_Unit>vCPU</span></td>
+<td RowSpan=1>Yes</td>
+<td RowSpan=1><span class=span_Value>0</span><span class=span_Unit>GB</span></td>
+<td RowSpan=1><span class=span_Value>0</span><span class=span_Unit>GB</span></td>
+<td class=td_OK>SCSI</td>
+<td class=td_OK>C:\ClusterStorage\csv-01\zTemplate-W2016-1.0-Gui\zTemplate-W2016-1.0-Gui.vhdx</td>
+<td>Dynamic</td>
+<td><span class=span_Value>60</span><span class=span_Unit>GB</span></td>
+<td RowSpan=1></td>
+</tr>
+<tr>
+<td RowSpan=2 class=td_computer>VMADS02</td>
+<td RowSpan=2>PYHYV02.seromit.local</td>
+<td RowSpan=2 class=td_OK><span class=span_Value>Running</span></td>
+<td RowSpan=2><span class=span_Value>2</span></td>
+<td RowSpan=2>Yes</td>
+<td RowSpan=2><span class=span_Value>2</span><span class=span_Unit>vCPU</span></td>
+<td RowSpan=2>Yes</td>
+<td RowSpan=2><span class=span_Value>0.7</span><span class=span_Unit>GB</span></td>
+<td RowSpan=2><span class=span_Value>1</span><span class=span_Unit>GB</span></td>
+<td class=td_OK>SCSI</td>
+<td class=td_OK>C:\ClusterStorage\CSV-01\VMADS02\W2016-1.0-Core.vhdx</td>
+<td>Dynamic</td>
+<td><span class=span_Value>60</span><span class=span_Unit>GB</span></td>
+<td RowSpan=2></td>
+</tr>
+<tr>
+<td class=td_OK>SCSI</td>
+<td class=td_OK>C:\ClusterStorage\CSV-01\VMADS02\Data.vhdx</td>
+<td>Dynamic</td>
+<td><span class=span_Value>20</span><span class=span_Unit>GB</span></td>
+</tr>
+<tr>
+<td RowSpan=3 class=td_computer>VMBCK01</td>
+<td RowSpan=3>PYHYV02.seromit.local</td>
+<td RowSpan=3 class=td_OK><span class=span_Value>Running</span></td>
+<td RowSpan=3><span class=span_Value>2</span></td>
+<td RowSpan=3>Yes</td>
+<td RowSpan=3><span class=span_Value>4</span><span class=span_Unit>vCPU</span></td>
+<td RowSpan=3>Yes</td>
+<td RowSpan=3><span class=span_Value>1</span><span class=span_Unit>GB</span></td>
+<td RowSpan=3><span class=span_Value>1.3</span><span class=span_Unit>GB</span></td>
+<td class=td_OK>SCSI</td>
+<td class=td_OK>C:\ClusterStorage\csv-02\vmbck01\W2016-1.0-GUI.vhdx</td>
+<td>Dynamic</td>
+<td><span class=span_Value>60</span><span class=span_Unit>GB</span></td>
+<td RowSpan=3></td>
+</tr>
+<tr>
+<td class=td_OK>SCSI</td>
+<td class=td_OK>C:\ClusterStorage\csv-02\vmbck01\Data.vhdx</td>
+<td>Dynamic</td>
+<td><span class=span_Value>20</span><span class=span_Unit>GB</span></td>
+</tr>
+<tr>
+<td class=td_OK>SCSI</td>
+<td class=td_OK>C:\ClusterStorage\csv-02\vmbck01\vPowerNFS.vhdx</td>
+<td>Dynamic</td>
+<td><span class=span_Value>20</span><span class=span_Unit>GB</span></td>
+</tr>
+<tr>
+<td RowSpan=1 class=td_computer>VMHON01</td>
+<td RowSpan=1>PYHYV02.seromit.local</td>
+<td RowSpan=1 class=td_OK><span class=span_Value>Running</span></td>
+<td RowSpan=1><span class=span_Value>2</span></td>
+<td RowSpan=1>Yes</td>
+<td RowSpan=1><span class=span_Value>2</span><span class=span_Unit>vCPU</span></td>
+<td RowSpan=1>Yes</td>
+<td RowSpan=1><span class=span_Value>1</span><span class=span_Unit>GB</span></td>
+<td RowSpan=1><span class=span_Value>1.2</span><span class=span_Unit>GB</span></td>
+<td class=td_OK>SCSI</td>
+<td class=td_OK>C:\ClusterStorage\csv-02\VMHON01\W2016-1.0-GUI.vhdx</td>
+<td>Dynamic</td>
+<td><span class=span_Value>60</span><span class=span_Unit>GB</span></td>
+<td RowSpan=1></td>
+</tr>
+<tr>
+<td RowSpan=2 class=td_computer>VMLIB01</td>
+<td RowSpan=2>PYHYV02.seromit.local</td>
+<td RowSpan=2 class=td_OK><span class=span_Value>Running</span></td>
+<td RowSpan=2><span class=span_Value>2</span></td>
+<td RowSpan=2>Yes</td>
+<td RowSpan=2><span class=span_Value>2</span><span class=span_Unit>vCPU</span></td>
+<td RowSpan=2>Yes</td>
+<td RowSpan=2><span class=span_Value>0.4</span><span class=span_Unit>GB</span></td>
+<td RowSpan=2><span class=span_Value>1</span><span class=span_Unit>GB</span></td>
+<td class=td_OK>SCSI</td>
+<td class=td_OK>C:\ClusterStorage\CSV-02\VMLIB01\W2016-V1.0-CORE.VHDX</td>
+<td>Dynamic</td>
+<td><span class=span_Value>60</span><span class=span_Unit>GB</span></td>
+<td RowSpan=2></td>
+</tr>
+<tr>
+<td class=td_OK>SCSI</td>
+<td class=td_OK>C:\ClusterStorage\CSV-02\VMLIB01\DATA.VHDX</td>
+<td>Dynamic</td>
+<td><span class=span_Value>100</span><span class=span_Unit>GB</span></td>
+</tr>
+<tr>
+<td RowSpan=2 class=td_computer>VMOMG01</td>
+<td RowSpan=2>PYHYV02.seromit.local</td>
+<td RowSpan=2 class=td_OK><span class=span_Value>Running</span></td>
+<td RowSpan=2><span class=span_Value>2</span></td>
+<td RowSpan=2>Yes</td>
+<td RowSpan=2><span class=span_Value>4</span><span class=span_Unit>vCPU</span></td>
+<td RowSpan=2>Yes</td>
+<td RowSpan=2><span class=span_Value>3.1</span><span class=span_Unit>GB</span></td>
+<td RowSpan=2><span class=span_Value>3.8</span><span class=span_Unit>GB</span></td>
+<td class=td_OK>SCSI</td>
+<td class=td_OK>C:\ClusterStorage\csv-02\VMOMG01\W2016-1.0-Gui.vhdx</td>
+<td>Dynamic</td>
+<td><span class=span_Value>60</span><span class=span_Unit>GB</span></td>
+<td RowSpan=2></td>
+</tr>
+<tr>
+<td class=td_OK>SCSI</td>
+<td class=td_OK>C:\ClusterStorage\csv-02\VMOMG01\Data.vhdx</td>
+<td>Dynamic</td>
+<td><span class=span_Value>20</span><span class=span_Unit>GB</span></td>
+</tr>
+<tr>
+<td RowSpan=2 class=td_computer>VMPKI01</td>
+<td RowSpan=2>PYHYV02.seromit.local</td>
+<td RowSpan=2 class=td_OK><span class=span_Value>Running</span></td>
+<td RowSpan=2><span class=span_Value>2</span></td>
+<td RowSpan=2>Yes</td>
+<td RowSpan=2><span class=span_Value>2</span><span class=span_Unit>vCPU</span></td>
+<td RowSpan=2>Yes</td>
+<td RowSpan=2><span class=span_Value>0.5</span><span class=span_Unit>GB</span></td>
+<td RowSpan=2><span class=span_Value>1</span><span class=span_Unit>GB</span></td>
+<td class=td_OK>SCSI</td>
+<td class=td_OK>C:\ClusterStorage\csv-01\vmpki01\W2016-1.0-Core.vhdx</td>
+<td>Dynamic</td>
+<td><span class=span_Value>60</span><span class=span_Unit>GB</span></td>
+<td RowSpan=2></td>
+</tr>
+<tr>
+<td class=td_OK>SCSI</td>
+<td class=td_OK>C:\ClusterStorage\csv-01\vmpki01\Data.vhdx</td>
+<td>Dynamic</td>
+<td><span class=span_Value>20</span><span class=span_Unit>GB</span></td>
+</tr>
+<tr>
+<td RowSpan=2 class=td_computer>VMPKI02</td>
+<td RowSpan=2>PYHYV02.seromit.local</td>
+<td RowSpan=2 class=td_OK><span class=span_Value>Running</span></td>
+<td RowSpan=2><span class=span_Value>2</span></td>
+<td RowSpan=2>Yes</td>
+<td RowSpan=2><span class=span_Value>2</span><span class=span_Unit>vCPU</span></td>
+<td RowSpan=2>Yes</td>
+<td RowSpan=2><span class=span_Value>0.5</span><span class=span_Unit>GB</span></td>
+<td RowSpan=2><span class=span_Value>1</span><span class=span_Unit>GB</span></td>
+<td class=td_OK>SCSI</td>
+<td class=td_OK>C:\ClusterStorage\csv-02\VMPKI02\W2016-1.0-Core.vhdx</td>
+<td>Dynamic</td>
+<td><span class=span_Value>60</span><span class=span_Unit>GB</span></td>
+<td RowSpan=2></td>
+</tr>
+<tr>
+<td class=td_OK>SCSI</td>
+<td class=td_OK>C:\ClusterStorage\csv-02\VMPKI02\Data.vhdx</td>
+<td>Dynamic</td>
+<td><span class=span_Value>20</span><span class=span_Unit>GB</span></td>
+</tr>
+<tr>
+<td RowSpan=1 class=td_computer>VMRDS01</td>
+<td RowSpan=1>PYHYV02.seromit.local</td>
+<td RowSpan=1 class=td_OK><span class=span_Value>Running</span></td>
+<td RowSpan=1><span class=span_Value>2</span></td>
+<td RowSpan=1>Yes</td>
+<td RowSpan=1><span class=span_Value>2</span><span class=span_Unit>vCPU</span></td>
+<td RowSpan=1>Yes</td>
+<td RowSpan=1><span class=span_Value>4.7</span><span class=span_Unit>GB</span></td>
+<td RowSpan=1><span class=span_Value>5.7</span><span class=span_Unit>GB</span></td>
+<td class=td_OK>SCSI</td>
+<td class=td_OK>C:\ClusterStorage\csv-01\vmrds01\w2016-1.0-gui.vhdx</td>
+<td>Dynamic</td>
+<td><span class=span_Value>60</span><span class=span_Unit>GB</span></td>
+<td RowSpan=1></td>
+</tr>
+<tr>
+<td RowSpan=2 class=td_computer>VMSUS01</td>
+<td RowSpan=2>PYHYV02.seromit.local</td>
+<td RowSpan=2 class=td_OK><span class=span_Value>Running</span></td>
+<td RowSpan=2><span class=span_Value>2</span></td>
+<td RowSpan=2>Yes</td>
+<td RowSpan=2><span class=span_Value>2</span><span class=span_Unit>vCPU</span></td>
+<td RowSpan=2>No</td>
+<td RowSpan=2><span class=span_Value>1.1</span><span class=span_Unit>GB</span></td>
+<td RowSpan=2><span class=span_Value>8</span><span class=span_Unit>GB</span></td>
+<td class=td_OK>SCSI</td>
+<td class=td_OK>C:\ClusterStorage\csv-01\vmsus01\w2016-1.0-core.vhdx</td>
+<td>Dynamic</td>
+<td><span class=span_Value>60</span><span class=span_Unit>GB</span></td>
+<td RowSpan=2></td>
+</tr>
+<tr>
+<td class=td_OK>SCSI</td>
+<td class=td_OK>C:\ClusterStorage\csv-01\vmsus01\databases.vhdx</td>
+<td>Dynamic</td>
+<td><span class=span_Value>50</span><span class=span_Unit>GB</span></td>
+</tr>
+</table>
+<H2>Storage Spaces Direct</H2>
+<H3>Storage Pool Information</H3>
+<table Class=table_main>
+<tr>
+<th>Friendly Name</th>
+<th>Health</th>
+<th>Operational Status</th>
+<th>Size</th>
+<th>Allocated Size</th>
+<th>Free Space</th>
+</tr>
+<tr>
+<td class=td_computer>VMPool</td>
+<td class=td_OK>Healthy</td>
+<td class=td_OK>OK</td>
+<td><span class=span_Value>1.63</span><span class=span_Unit>TB</span></td>
+<td><span class=span_Value>1.18</span><span class=span_Unit>TB</span></td>
+<td><span class=span_Value>0.45</span><span class=span_Unit>TB</span></td>
+</tr>
+</table>
+<H3>Virtual disk Information</H3>
+<table Class=table_main>
+<tr>
+<th>Friendly Name</th>
+<th>Health</th>
+<th>Number of columns</th>
+<th>Resiliency</th>
+<th>Size</th>
+<th>Footprint on pool</th>
+</tr>
+<tr>
+<td class=td_computer>CSV-01</td>
+<td class=td_OK>Healthy</td>
+<td><span class=span_Value>4</span></td>
+<td>2-Way Mirroring</td>
+<td><span class=span_Value>0.29</span><span class=span_Unit>TB</span></td>
+<td><span class=span_Value>0.59</span><span class=span_Unit>TB</span></td>
+</tr>
+<tr>
+<td class=td_computer>CSV-02</td>
+<td class=td_OK>Healthy</td>
+<td><span class=span_Value>4</span></td>
+<td>2-Way Mirroring</td>
+<td><span class=span_Value>0.29</span><span class=span_Unit>TB</span></td>
+<td><span class=span_Value>0.59</span><span class=span_Unit>TB</span></td>
+</tr>
+</table>
+<H3>Physical disk information</H3>
+<table Class=table_main>
+<tr>
+<th>Friendly Name</th>
+<th>Storage Pool</th>
+<th>Health</th>
+<th>Operational Status</th>
+<th>Firmware version</th>
+<th>Model</th>
+<th>Serial number</th>
+<th>Media type</th>
+<th>Bus type</th>
+<th>Usage</th>
+<th>Size</th>
+<th>Allocated size</th>
+<th>Free Size</th>
+</tr>
+<tr>
+<td class=td_computer>ATA INTEL SSDSC2BX20</td>
+<td class=td_computer>VMPool</td>
+<td class=td_OK>Healthy</td>
+<td class=td_OK>OK</td>
+<td>DL2B</td>
+<td>INTEL SSDSC2BX20</td>
+<td>BTHC650303TM200TGN</td>
+<td>SSD</td>
+<td>SAS</td>
+<td>Capacity<br><Span class=span_advert>Auto-Select</Span></td>
+<td><span class=span_Value>0.18</span><span class=span_Unit>TB</span></td>
+<td><span class=span_Value>0.11</span><span class=span_Unit>TB</span></td>
+<td><span class=span_Value>0.07</span><span class=span_Unit>TB</span></td>
+</tr>
+<tr>
+<td class=td_computer>ATA INTEL SSDSC2BX20</td>
+<td class=td_computer>VMPool</td>
+<td class=td_OK>Healthy</td>
+<td class=td_OK>OK</td>
+<td>0110</td>
+<td>INTEL SSDSC2BX20</td>
+<td>BTHC503201AR200TGN</td>
+<td>SSD</td>
+<td>SAS</td>
+<td>Capacity<br><Span class=span_advert>Auto-Select</Span></td>
+<td><span class=span_Value>0.18</span><span class=span_Unit>TB</span></td>
+<td><span class=span_Value>0.12</span><span class=span_Unit>TB</span></td>
+<td><span class=span_Value>0.06</span><span class=span_Unit>TB</span></td>
+</tr>
+<tr>
+<td class=td_computer>ATA INTEL SSDSC2BX20</td>
+<td class=td_computer>VMPool</td>
+<td class=td_OK>Healthy</td>
+<td class=td_OK>OK</td>
+<td>DL2B</td>
+<td>INTEL SSDSC2BX20</td>
+<td>BTHC650303T6200TGN</td>
+<td>SSD</td>
+<td>SAS</td>
+<td>Capacity<br><Span class=span_advert>Auto-Select</Span></td>
+<td><span class=span_Value>0.18</span><span class=span_Unit>TB</span></td>
+<td><span class=span_Value>0.12</span><span class=span_Unit>TB</span></td>
+<td><span class=span_Value>0.06</span><span class=span_Unit>TB</span></td>
+</tr>
+<tr>
+<td class=td_computer>ATA INTEL SSDSC2BX20</td>
+<td class=td_computer>VMPool</td>
+<td class=td_OK>Healthy</td>
+<td class=td_OK>OK</td>
+<td>DL2B</td>
+<td>INTEL SSDSC2BX20</td>
+<td>BTHC650303SP200TGN</td>
+<td>SSD</td>
+<td>SAS</td>
+<td>Capacity<br><Span class=span_advert>Auto-Select</Span></td>
+<td><span class=span_Value>0.18</span><span class=span_Unit>TB</span></td>
+<td><span class=span_Value>0.15</span><span class=span_Unit>TB</span></td>
+<td><span class=span_Value>0.03</span><span class=span_Unit>TB</span></td>
+</tr>
+<tr>
+<td class=td_computer>ATA INTEL SSDSC2BX20</td>
+<td class=td_computer>VMPool</td>
+<td class=td_OK>Healthy</td>
+<td class=td_OK>OK</td>
+<td>DL2B</td>
+<td>INTEL SSDSC2BX20</td>
+<td>BTHC6503030S200TGN</td>
+<td>SSD</td>
+<td>SAS</td>
+<td>Capacity<br><Span class=span_advert>Auto-Select</Span></td>
+<td><span class=span_Value>0.18</span><span class=span_Unit>TB</span></td>
+<td><span class=span_Value>0.15</span><span class=span_Unit>TB</span></td>
+<td><span class=span_Value>0.03</span><span class=span_Unit>TB</span></td>
+</tr>
+<tr>
+<td class=td_computer>ATA INTEL SSDSC2BX20</td>
+<td class=td_computer>VMPool</td>
+<td class=td_OK>Healthy</td>
+<td class=td_OK>OK</td>
+<td>DL2B</td>
+<td>INTEL SSDSC2BX20</td>
+<td>BTHC650303SX200TGN</td>
+<td>SSD</td>
+<td>SAS</td>
+<td>Capacity<br><Span class=span_advert>Auto-Select</Span></td>
+<td><span class=span_Value>0.18</span><span class=span_Unit>TB</span></td>
+<td><span class=span_Value>0.15</span><span class=span_Unit>TB</span></td>
+<td><span class=span_Value>0.03</span><span class=span_Unit>TB</span></td>
+</tr>
+<tr>
+<td class=td_computer>ATA INTEL SSDSC2BX20</td>
+<td class=td_computer>VMPool</td>
+<td class=td_OK>Healthy</td>
+<td class=td_OK>OK</td>
+<td>DL2B</td>
+<td>INTEL SSDSC2BX20</td>
+<td>BTHC650303U4200TGN</td>
+<td>SSD</td>
+<td>SAS</td>
+<td>Capacity<br><Span class=span_advert>Auto-Select</Span></td>
+<td><span class=span_Value>0.18</span><span class=span_Unit>TB</span></td>
+<td><span class=span_Value>0.15</span><span class=span_Unit>TB</span></td>
+<td><span class=span_Value>0.03</span><span class=span_Unit>TB</span></td>
+</tr>
+<tr>
+<td class=td_computer>ATA INTEL SSDSC2BX20</td>
+<td class=td_computer>VMPool</td>
+<td class=td_OK>Healthy</td>
+<td class=td_OK>OK</td>
+<td>DL2B</td>
+<td>INTEL SSDSC2BX20</td>
+<td>BTHC650303U5200TGN</td>
+<td>SSD</td>
+<td>SAS</td>
+<td>Capacity<br><Span class=span_advert>Auto-Select</Span></td>
+<td><span class=span_Value>0.18</span><span class=span_Unit>TB</span></td>
+<td><span class=span_Value>0.12</span><span class=span_Unit>TB</span></td>
+<td><span class=span_Value>0.06</span><span class=span_Unit>TB</span></td>
+</tr>
+<tr>
+<td class=td_computer>ATA INTEL SSDSC2BX20</td>
+<td class=td_computer>VMPool</td>
+<td class=td_OK>Healthy</td>
+<td class=td_OK>OK</td>
+<td>DL2B</td>
+<td>INTEL SSDSC2BX20</td>
+<td>BTHC650303U9200TGN</td>
+<td>SSD</td>
+<td>SAS</td>
+<td>Capacity<br><Span class=span_advert>Auto-Select</Span></td>
+<td><span class=span_Value>0.18</span><span class=span_Unit>TB</span></td>
+<td><span class=span_Value>0.12</span><span class=span_Unit>TB</span></td>
+<td><span class=span_Value>0.06</span><span class=span_Unit>TB</span></td>
+</tr>
+</table>
+<H3>SMB MultiChannel SBL connection for PYHYV01</H3>
+<table Class=table_main>
+<tr>
+<th>Client IP Address</th>
+<th>Client NIC name</th>
+<th>Client RSS Capable</th>
+<th>Client RDMA capable</th>
+<th>Server IP Address</th>
+<th>Server NIC index</th>
+<th>Server RSS Capable</th>
+<th>Server RDMA Capable</th>
+</tr>
+<tr>
+<td>10.10.103.12</td>
+<td>vEthernet (SMB-103-02)</td>
+<td>False</td>
+<td>True</td>
+<td>10.10.103.11</td>
+<td>8</td>
+<td>False</td>
+<td>True</td>
+</tr>
+<tr>
+<td>10.10.103.10</td>
+<td>vEthernet (SMB-103-01)</td>
+<td>False</td>
+<td>True</td>
+<td>10.10.103.13</td>
+<td>12</td>
+<td>False</td>
+<td>True</td>
+</tr>
+</table>
+<H3>SMB MultiChannel CSV connection for PYHYV01</H3>
+<table Class=table_main>
+<tr>
+<th>Client IP Address</th>
+<th>Client NIC name</th>
+<th>Client RSS Capable</th>
+<th>Client RDMA capable</th>
+<th>Server IP Address</th>
+<th>Server NIC index</th>
+<th>Server RSS Capable</th>
+<th>Server RDMA Capable</th>
+</tr>
+<tr>
+<td>10.10.103.12</td>
+<td>vEthernet (SMB-103-02)</td>
+<td>False</td>
+<td>True</td>
+<td>10.10.103.11</td>
+<td>8</td>
+<td>False</td>
+<td>True</td>
+</tr>
+<tr>
+<td>10.10.103.10</td>
+<td>vEthernet (SMB-103-01)</td>
+<td>False</td>
+<td>True</td>
+<td>10.10.103.13</td>
+<td>12</td>
+<td>False</td>
+<td>True</td>
+</tr>
+</table>
+<H3>SMB MultiChannel SBL connection for PYHYV02</H3>
+<table Class=table_main>
+<tr>
+<th>Client IP Address</th>
+<th>Client NIC name</th>
+<th>Client RSS Capable</th>
+<th>Client RDMA capable</th>
+<th>Server IP Address</th>
+<th>Server NIC index</th>
+<th>Server RSS Capable</th>
+<th>Server RDMA Capable</th>
+</tr>
+<tr>
+<td>10.10.103.13</td>
+<td>vEthernet (SMB-103-02)</td>
+<td>False</td>
+<td>True</td>
+<td>10.10.103.10</td>
+<td>10</td>
+<td>False</td>
+<td>True</td>
+</tr>
+<tr>
+<td>10.10.103.11</td>
+<td>vEthernet (SMB-103-01)</td>
+<td>False</td>
+<td>True</td>
+<td>10.10.103.12</td>
+<td>12</td>
+<td>False</td>
+<td>True</td>
+</tr>
+</table>
+<H3>SMB MultiChannel CSV connection for PYHYV02</H3>
+<table Class=table_main>
+<tr>
+<th>Client IP Address</th>
+<th>Client NIC name</th>
+<th>Client RSS Capable</th>
+<th>Client RDMA capable</th>
+<th>Server IP Address</th>
+<th>Server NIC index</th>
+<th>Server RSS Capable</th>
+<th>Server RDMA Capable</th>
+</tr>
+<tr>
+<td>10.10.103.13</td>
+<td>vEthernet (SMB-103-02)</td>
+<td>False</td>
+<td>True</td>
+<td>10.10.103.10</td>
+<td>10</td>
+<td>False</td>
+<td>True</td>
+</tr>
+<tr>
+<td>10.10.103.11</td>
+<td>vEthernet (SMB-103-01)</td>
+<td>False</td>
+<td>True</td>
+<td>10.10.103.12</td>
+<td>12</td>
+<td>False</td>
+<td>True</td>
+</tr>
+</table>
+<br><br><br>
+<center><span class="span_advert">This board has been generated by PowerShell script written by Romain Serre (Twitter: @RomSerre) - <a href="https://www.tech-coffee.net" target"_blank">https://www.tech-coffee.net</a></span></center>
+</body>
+</html>
