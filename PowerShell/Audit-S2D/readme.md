@@ -6,8 +6,8 @@ When the script has finished, an HTML file is generated and provide you a dashbo
 
 To run the script, run the following commands:
 
-$Credential = Get-Credential
-./audit-S2D.ps1 -DomainName "MyDomain" -ClusterName "MyS2DHCICluster" -Credential $Credential -Path "C:\Where\My\HTML\is\Generated"
+$Credential = Get-Credential    
+.\audit-S2D.ps1 -DomainName "MyDomain" -ClusterName "MyS2DHCICluster" -Credential $Credential -Path "C:\Where\My\HTML\is\Generated"
 
 ---- Tested environment -----
 - Windows Server 1607
