@@ -412,10 +412,6 @@ Function Get-VMHostNetwork {
                 # if it is a virtual interface
                 if ($Nic.InterfaceDescription -like "*Hyper-V*"){
 
-                    # Removing "vEthernet () from nic name to get the VM network adapter name
-                    $vNICName = $Nic.Name -replace 'vEthernet \(', ''
-                    $vNICName = $vNICName -replace '\)', ''
-
                     # gather information about vNIC
                     $vNIC = Get-VMNetworkAdapter -ManagementOS |? DeviceID -like $Nic.DeviceID
                     $VLAN = Get-VMNetworkAdapterVLAN -VMNetworkAdapterName $vNIC.Name -ManagementOS
