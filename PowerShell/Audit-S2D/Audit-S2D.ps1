@@ -9,6 +9,7 @@
     0.3: Change consolidation rate to not take into account hyperthreading
     0.4: Resolve bugs, add information
     0.5: Force charset to UTF-8, resolve special char issue. Add trademark.
+    0.6: Resolve an issue to match the Network Adapter with VMNetworkAdapter
 .AUTHOR
     Romain Serre
     Blog: https://www.tech-coffee.net
@@ -416,8 +417,8 @@ Function Get-VMHostNetwork {
                     $vNICName = $vNICName -replace '\)', ''
 
                     # gather information about vNIC
-                    $vNIC = Get-VMNetworkAdapter -VMNetworkAdapterName $vNICName -ManagementOS
-                    $VLAN = Get-VMNetworkAdapterVLAN -VMNetworkAdapterName $vNICName -ManagementOS
+                    $vNIC = Get-VMNetworkAdapter -ManagementOS |? DeviceID -like $Nic.DeviceID
+                    $VLAN = Get-VMNetworkAdapterVLAN -VMNetworkAdapterName $vNIC.Name -ManagementOS
                     $NicObj | Add-Member -Type NoteProperty -Name VMQState -Value "N/a"
                     $NicObj | Add-Member -Type NoteProperty -Name VMQ -Value "N/a"
                     $NicObj | Add-Member -Type NoteProperty -Name Type -Value Virtual
@@ -435,7 +436,7 @@ Function Get-VMHostNetwork {
                     Else {
                         $NicObj | Add-Member -Type NoteProperty -Name VLAN -Value "Trunk: $($VLAN.AllowedVlanIdList) ($($VLAN.NativeVlanId))"
                     }
-                    $TeamMapping = (Get-VMNetworkAdapterTeamMapping -ManagementOS -Name $vNICName).NetAdapterName
+                    $TeamMapping = (Get-VMNetworkAdapterTeamMapping -ManagementOS -Name $vNIC.Name).NetAdapterName
                     if ($TeamMapping -like $Null){
                         $TeamMapping = "Not Configured"
                     }
@@ -510,15 +511,11 @@ Function Get-VMHostNetwork {
                 # if the NIC is a vNIC
                 if ($Nic.InterfaceDescription -like "*Hyper-V*"){
 
-                    # removing vEthernet () to get the VM network adapter name
-                    $vNICName = $Nic.Name -replace 'vEthernet \(', ''
-                    $vNICName = $vNICName -replace '\)', ''
-
                     # Run invoke-command to get remote information. Don't have choice because get-VMNetworkAdapter -cim -computer return error
-                    $vNIC = Invoke-Command -ComputerName $($VMHost.Name + "." + $DomainName) -Credential $Credential -ArgumentList $vNICName -ScriptBlock {
-                            Get-VMNetworkAdapter -VMNetworkAdapterName $Args[0] -ManagementOS}
+                    $vNIC = Invoke-Command -ComputerName $($VMHost.Name + "." + $DomainName) -Credential $Credential -ArgumentList $Nic.DeviceId -ScriptBlock {
+                            Get-VMNetworkAdapter -ManagementOS |? DeviceID -like $Args[0]}
 
-                    $VLAN = Invoke-Command -ComputerName $($VMHost.Name + "." + $DomainName) -Credential $Credential -ArgumentList $vNICName -ScriptBlock {
+                    $VLAN = Invoke-Command -ComputerName $($VMHost.Name + "." + $DomainName) -Credential $Credential -ArgumentList $vNIC.Name -ScriptBlock {
                             Get-VMNetworkAdapterVLAN -VMNetworkAdapterName $Args[0] -ManagementOS}
                     $NicObj | Add-Member -Type NoteProperty -Name VMQState -Value "N/a"
                     $NicObj | Add-Member -Type NoteProperty -Name VMQ -Value "N/a"
@@ -537,7 +534,7 @@ Function Get-VMHostNetwork {
                     Else {
                         $NicObj | Add-Member -Type NoteProperty -Name VLAN -Value "Trunk: $($VLAN.AllowedVlanIdList) ($($VLAN.NativeVlanId))"
                     }
-                    $TeamMapping = Invoke-Command -ComputerName $($VMHost.Name + "." + $DomainName) -Credential $Credential -ArgumentList $vNICName -ScriptBlock {
+                    $TeamMapping = Invoke-Command -ComputerName $($VMHost.Name + "." + $DomainName) -Credential $Credential -ArgumentList $vNIC.Name -ScriptBlock {
                                    (Get-VMNetworkAdapterTeamMapping -ManagementOS -Name $Args[0]).NetAdapterName}
 
                     if ($TeamMapping -like $Null){
