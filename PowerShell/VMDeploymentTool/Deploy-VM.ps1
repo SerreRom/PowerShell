@@ -1,4 +1,4 @@
-#requires -module Hyper-V, FailoverClusters, ActiveDirectory
+ #requires -module Hyper-V, FailoverClusters, ActiveDirectory
 
 clear
 
@@ -7,8 +7,6 @@ clear
 Function Show-ScriptInformation{
     Write-Host "Welcome to Hyper-V VM deployment tool v0.1" -ForegroundColor Green -BackgroundColor Black
     Write-Host "This script has been written by Romain Serre" -ForegroundColor Green -BackgroundColor Black
-    Write-Host "Twitter: @RomSerre" -ForegroundColor Green -BackgroundColor Black
-    Write-Host "Blog: http://www.tech-coffee.net" -ForegroundColor Green -BackgroundColor Black
     Write-Host "Enjoy :)" -ForegroundColor Green -BackgroundColor Black
     Write-Host
     Write-Host
@@ -328,16 +326,14 @@ Function Create-XMLConfigureOS {
           [Array]$NetAdapters,
           [String]$ComputerName
           )
-
-    
     
     Invoke-Command -ComputerName $ComputerName `
                    -ArgumentList $VMName, $DomainName, $OUPath, $Account, $Password, $VHDXPath, $NetAdapters `
                    -ScriptBlock {
                 
-                $VolumeVHD   = (Mount-VHD –Path $Args[5] –Passthru | Get-Disk | Get-Partition | Get-Volume |? FileSystemLabel -notlike "Recovery").DriveLetter
+                $VolumeVHD   = (Mount-VHD -Path $Args[5] -Passthru | Get-Disk | Get-Partition | Get-Volume |? FileSystemLabel -like "OS").DriveLetter
 
-                $ConfigureOS = $($VolumeVHD + ":\Windows\Panther\Unattend\ConfigureOS.xml")
+                $ConfigureOS = $($VolumeVHD.tostring() + ":\Windows\Panther\Unattend\ConfigureOS.xml")
                 [XML]$XML    = Get-Content $ConfigureOS
 
                 $XML.Configuration.ComputerName    = $Args[0]
@@ -396,7 +392,7 @@ Function Set-IntegrationServices {
 #### VARIABLES ####
 
 # Template repository
-$TemplatePath = "\\VMLIB01\Template"
+$TemplatePath = "\\M1SPW1010\c$\ClusterStorage\Template\Script\Deploy-template"
 
 #### MAIN CODE ####
 
@@ -637,3 +633,4 @@ Foreach ($VM in $Template.VirtualMachines.VM){
     Write-Host "Total duration to deploy $($GetVM.Name): $($Duration.TotalSeconds) seconds" -Foreground Green -BackgroundColor Black
 }
 
+ 
